@@ -1,0 +1,1 @@
+This directory holds global styles, theme tokens, and Tailwind customizations. 
