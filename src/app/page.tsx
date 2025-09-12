@@ -1,6 +1,6 @@
-import { CategoryNav } from "@/components/CategoryNav";
-import { HeroBanner } from "@/components/HeroBanner";
-import { CategoryGrid } from "@/components/CategoryGrid";
+import { CategoryNav } from "../components/CategoryNavVN";
+import { HeroBanner } from "../components/HeroBannerVN";
+import { CategoryGrid } from "../components/CategoryGridVN";
 
 export default function HomePage() {
   return (
@@ -9,5 +9,5 @@ export default function HomePage() {
       <HeroBanner />
       <CategoryGrid />
     </main>
-  );
+  )
 }
