@@ -25,7 +25,8 @@ export async function login(request: LoginRequest): Promise<LoginResponse> {
         body: JSON.stringify(request),
       });
     }
-    throw err;
+    // Normalize error for UI
+    throw new Error("Đăng nhập không thành công");
   }
 }
 

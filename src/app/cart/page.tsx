@@ -1,28 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Minus, Plus, Trash2 } from "@/components/UI/icons";
 import Link from "next/link";
 
-const cartItems = [
-  {
-    id: 1,
-    name: "Smart TV Samsung 55 inch 4K",
-    price: 15990000,
-    quantity: 1,
-    image: "/smart-tv-samsung.jpg",
-  },
-  {
-    id: 2,
-    name: "Nồi chiên không dầu Philips 4.1L",
-    price: 2990000,
-    quantity: 2,
-    image: "/philips-air-fryer.jpg",
-  },
-];
+function getInitialCartFromQuery(): { id: number; name: string; price: number; image?: string; quantity: number }[] {
+  if (typeof window === "undefined") return []
+  const url = new URL(window.location.href)
+  const id = url.searchParams.get("id")
+  const name = url.searchParams.get("name")
+  const price = url.searchParams.get("price")
+  const image = url.searchParams.get("image") || undefined
+  if (id && name && price) {
+    return [{ id: Number(id), name, price: Number(price), image, quantity: 1 }]
+  }
+  return []
+}
 
 export default function CartPage() {
-  const [items, setItems] = useState(cartItems);
+  const [items, setItems] = useState(getInitialCartFromQuery());
+
+  // hydrate from localStorage if available
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    try {
+      const raw = localStorage.getItem("cart")
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        if (Array.isArray(parsed) && parsed.length > 0) setItems(parsed)
+      }
+    } catch {}
+  }, []);
+
+  // keep localStorage in sync
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    try {
+      localStorage.setItem("cart", JSON.stringify(items))
+    } catch {}
+  }, [items]);
 
   const updateQuantity = (id: number, newQuantity: number) => {
     if (newQuantity < 1) return;

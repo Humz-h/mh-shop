@@ -3,9 +3,11 @@
 import type React from "react";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { login } from "@/app/auth/services/auth";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -20,8 +22,9 @@ export default function LoginPage() {
       setToken(result.token);
       localStorage.setItem("token", result.token);
       setError("");
+      router.push("/");
     } catch (err: any) {
-      setError(err?.message || "Login failed");
+      setError("Đăng nhập không thành công");
     }
   };
 

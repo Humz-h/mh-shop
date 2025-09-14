@@ -21,7 +21,7 @@ export function useCart() {
     });
   }, []);
 
-  const removeItem = useCallback((productId: string) => {
+  const removeItem = useCallback((productId: number) => {
     setItems((prev) => prev.filter((x) => x.product.id !== productId));
   }, []);
 
