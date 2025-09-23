@@ -2,8 +2,8 @@ import type React from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/HeaderVN";
-import { Footer } from "@/components/FooterVN";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
