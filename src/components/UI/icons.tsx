@@ -125,3 +125,26 @@ export const Menu = ({ size = 24, ...props }: IconProps) => (
     <line x1="4" y1="18" x2="20" y2="18" />
   </svg>
 )
+
+export const ChevronLeft = ({ size = 24, ...props }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="m15 18-6-6 6-6" />
+  </svg>
+)
+
+export const ChevronRight = ({ size = 24, ...props }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="m9 18 6-6-6-6" />
+  </svg>
+)
+
+export const Gift = ({ size = 24, ...props }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <rect width="20" height="12" x="2" y="6" rx="2" />
+    <path d="M12 6v12" />
+    <path d="M2 10h20" />
+    <path d="M7 6v4" />
+    <path d="M17 6v4" />
+    <path d="M7 6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v4H7V6Z" />
+  </svg>
+)

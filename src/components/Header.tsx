@@ -20,10 +20,16 @@ export function Header() {
       />
       <header className="bg-white shadow-sm sticky top-0 z-50">
       {/* Top bar */}
-      <div className="bg-green-600 text-white py-2">
-        <div className="container mx-auto px-4 flex justify-between items-center text-sm">
-          <span>Hàng chuẩn, giá mê</span>
-          <span>Miễn phí vận chuyển cho đơn hàng trên 500.000₫</span>
+      <div className="bg-green-600 text-white py-2 overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center text-sm">
+            <div className="flex-1">
+              <div className="animate-marquee whitespace-nowrap">
+                <span className="inline-block mr-8">Hàng chuẩn, giá mê</span>
+                <span className="inline-block mr-8">Miễn phí vận chuyển cho đơn hàng trên 500.000₫</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
