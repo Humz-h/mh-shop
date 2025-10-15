@@ -7,7 +7,8 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   token: string;
-  username: string;
+  name: string;
+  email: string;
   role: string;
 }
 
@@ -38,7 +39,8 @@ export interface RegisterRequest {
 
 export interface RegisterResponse {
   token: string;
-  username: string;
+  name: string;
+  email: string;
   role: string;
 }
 

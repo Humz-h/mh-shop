@@ -95,16 +95,110 @@ const flashSaleProducts: Product[] = [
     originalPrice: 11990000,
     sold: 0,
     total: 9
+  },
+  {
+    id: "9",
+    name: "Máy sấy tóc Philips 2000W",
+    image: "/placeholder-hairdryer.png",
+    specs: ["2000W", "3 tốc độ", "Ion âm", "Chống nóng"],
+    currentPrice: 1290000,
+    originalPrice: 1990000,
+    sold: 0,
+    total: 7
+  },
+  {
+    id: "10",
+    name: "Bàn ủi hơi nước Tefal",
+    image: "/placeholder-iron.png",
+    specs: ["2400W", "Hơi nước", "Chống vôi", "Tự động tắt"],
+    currentPrice: 1890000,
+    originalPrice: 2890000,
+    sold: 0,
+    total: 11
+  },
+  {
+    id: "11",
+    name: "Máy xay sinh tố Philips 1000W",
+    image: "/placeholder-blender.png",
+    specs: ["1000W", "4 lưỡi dao", "Inox 304", "Chống ồn"],
+    currentPrice: 1590000,
+    originalPrice: 2290000,
+    sold: 0,
+    total: 8
+  },
+  {
+    id: "12",
+    name: "Nồi cơm điện Tiger 1.8L",
+    image: "/placeholder-ricecooker.png",
+    specs: ["1.8L", "Nồi chống dính", "Hẹn giờ", "Tiết kiệm điện"],
+    currentPrice: 890000,
+    originalPrice: 1290000,
+    sold: 0,
+    total: 15
+  },
+  {
+    id: "13",
+    name: "Máy lọc nước RO 9 cấp",
+    image: "/placeholder-waterfilter.png",
+    specs: ["9 cấp lọc", "RO", "UV", "Tự động sục rửa"],
+    currentPrice: 3990000,
+    originalPrice: 5990000,
+    sold: 0,
+    total: 6
+  },
+  {
+    id: "14",
+    name: "Bếp từ đôi Sunhouse 2000W",
+    image: "/placeholder-induction.png",
+    specs: ["2000W", "Đôi", "Cảm ứng", "An toàn"],
+    currentPrice: 2190000,
+    originalPrice: 3290000,
+    sold: 0,
+    total: 9
+  },
+  {
+    id: "15",
+    name: "Máy hút bụi Electrolux 2000W",
+    image: "/placeholder-vacuum.png",
+    specs: ["2000W", "Khô/ướt", "Túi lọc", "Đa năng"],
+    currentPrice: 2490000,
+    originalPrice: 3790000,
+    sold: 0,
+    total: 12
   }
 ];
 
 export function FlashSaleBanner() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [slidesPerView, setSlidesPerView] = useState(6);
+  const [isVertical, setIsVertical] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [timeLeft, setTimeLeft] = useState({
     hours: 1,
     minutes: 23,
     seconds: 45
   });
+
+  // Responsive handling
+  useEffect(() => {
+    const handleResize = () => {
+      const windowWidth = window.innerWidth;
+      if (windowWidth <= 760) {
+        setSlidesPerView(1);
+        setIsVertical(true);
+      } else if (windowWidth <= 1024) {
+        setSlidesPerView(4);
+        setIsVertical(false);
+      } else {
+        setSlidesPerView(6);
+        setIsVertical(false);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Countdown timer
   useEffect(() => {
@@ -125,14 +219,40 @@ export function FlashSaleBanner() {
   }, []);
 
   const nextSlide = () => {
+    if (isTransitioning) return;
+    
+    setIsTransitioning(true);
     setCurrentIndex((prev) => {
-      return (prev + 1) % flashSaleProducts.length;
+      const newIndex = (prev + 1) % flashSaleProducts.length;
+      
+      // Reset position sau khi transition hoàn thành
+      setTimeout(() => {
+        if (newIndex === 0) {
+          setCurrentIndex(0);
+        }
+        setIsTransitioning(false);
+      }, 500);
+      
+      return newIndex;
     });
   };
 
   const prevSlide = () => {
+    if (isTransitioning) return;
+    
+    setIsTransitioning(true);
     setCurrentIndex((prev) => {
-      return prev === 0 ? flashSaleProducts.length - 1 : prev - 1;
+      const newIndex = prev === 0 ? flashSaleProducts.length - 1 : prev - 1;
+      
+      // Reset position sau khi transition hoàn thành
+      setTimeout(() => {
+        if (newIndex === flashSaleProducts.length - 1) {
+          setCurrentIndex(flashSaleProducts.length - 1);
+        }
+        setIsTransitioning(false);
+      }, 500);
+      
+      return newIndex;
     });
   };
 
@@ -142,8 +262,9 @@ export function FlashSaleBanner() {
 
   const getVisibleProducts = () => {
     const products = [];
-    for (let i = 0; i < 5; i++) {
-      const index = (currentIndex + i) % flashSaleProducts.length;
+    // Thêm sản phẩm trước để tạo infinite loop
+    for (let i = -1; i < slidesPerView + 1; i++) {
+      const index = (currentIndex + i + flashSaleProducts.length) % flashSaleProducts.length;
       products.push(flashSaleProducts[index]);
     }
     return products;
@@ -176,16 +297,23 @@ export function FlashSaleBanner() {
       </div>
 
        {/* Products Carousel */}
-       <div className="relative w-full overflow-hidden flex justify-center">
+       <div className={`relative w-full overflow-hidden ${isVertical ? 'h-96' : 'h-auto'}`}>
          <div 
-           className="flex gap-3 transition-transform duration-500 ease-in-out"
+           className={`flex gap-3 ${
+             isTransitioning ? 'transition-transform duration-500 ease-in-out' : ''
+           } ${isVertical ? 'flex-col' : 'flex-row'}`}
            style={{ 
-             transform: `translateX(-${currentIndex * (240 + 12)}px)`,
-             width: `${5 * (240 + 12)}px`
+             transform: isVertical 
+               ? `translateY(-${(currentIndex + 1) * (320 + 12)}px)`
+               : `translateX(-${(currentIndex + 1) * (240 + 12)}px)`,
+             width: isVertical ? '100%' : `${(slidesPerView + 2) * (240 + 12)}px`,
+             height: isVertical ? `${(flashSaleProducts.length + 2) * (320 + 12)}px` : 'auto'
            }}
          >
           {visibleProducts.map((product) => (
-            <div key={product.id} className="flex-shrink-0 w-60 bg-white rounded-xl p-3 shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 ease-in-out border border-gray-100">
+            <div key={product.id} className={`flex-shrink-0 bg-white rounded-xl p-3 shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 ease-in-out border border-gray-100 ${
+              isVertical ? 'w-full h-80' : 'w-60'
+            }`}>
               {/* Product Image */}
               <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl mb-4 flex items-center justify-center relative overflow-hidden">
                 <div className="text-gray-400 text-center">
@@ -239,19 +367,27 @@ export function FlashSaleBanner() {
         </div>
 
         {/* Navigation arrows */}
-        {flashSaleProducts.length > 0 && (
+        {flashSaleProducts.length > slidesPerView && (
           <>
             <button
               onClick={prevSlide}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 hover:scale-110 transition-all duration-300 ease-in-out z-10"
+              className={`absolute w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 hover:scale-110 transition-all duration-300 ease-in-out z-10 ${
+                isVertical 
+                  ? 'top-0 left-1/2 -translate-x-1/2 -translate-y-4' 
+                  : 'left-0 top-1/2 -translate-y-1/2 -translate-x-4'
+              }`}
             >
-              <ChevronLeft className="h-5 w-5 text-gray-600" />
+              <ChevronLeft className={`h-5 w-5 text-gray-600 ${isVertical ? 'rotate-90' : ''}`} />
             </button>
             <button
               onClick={nextSlide}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 hover:scale-110 transition-all duration-300 ease-in-out z-10"
+              className={`absolute w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 hover:scale-110 transition-all duration-300 ease-in-out z-10 ${
+                isVertical 
+                  ? 'bottom-0 left-1/2 -translate-x-1/2 translate-y-4' 
+                  : 'right-0 top-1/2 -translate-y-1/2 translate-x-4'
+              }`}
             >
-              <ChevronRight className="h-5 w-5 text-gray-600" />
+              <ChevronRight className={`h-5 w-5 text-gray-600 ${isVertical ? 'rotate-90' : ''}`} />
             </button>
           </>
         )}

@@ -5,9 +5,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { login } from "@/app/auth/services/auth";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { loginWithResponse } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -19,8 +21,8 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       const result = await login({ email: formData.email, password: formData.password });
+      loginWithResponse(result);
       setToken(result.token);
-      localStorage.setItem("token", result.token);
       setError("");
       router.push("/");
     } catch (err: any) {
