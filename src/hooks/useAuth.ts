@@ -1,48 +1,102 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import type { Customer } from "@/types";
+import { apiFetch } from "@/lib/api";
 
-interface User {
-  id?: number;
-  name: string;
-  email: string;
-  role?: string;
+async function getCurrentUser(token: string): Promise<Customer> {
+  return apiFetch<Customer>("/auth/me", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 }
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
+  const [customer, setCustomer] = useState<Customer | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     checkAuthStatus();
   }, []);
 
-  const checkAuthStatus = () => {
+  const checkAuthStatus = async () => {
     const token = localStorage.getItem("token");
-    if (token) {
-      // Mock user data - in real app, you'd decode JWT or fetch user info
-      setUser({
-        id: 21,
-        name: "admin",
-        email: "admin@123gmail.com",
-        role: "admin"
-      });
+    const savedCustomer = localStorage.getItem("customer");
+    
+    if (token && savedCustomer) {
+      try {
+        // Try to parse saved customer data
+        const customerData = JSON.parse(savedCustomer);
+        setCustomer(customerData);
+      } catch (err) {
+        // If parsing fails, try to fetch from API
+        try {
+          const customerData = await getCurrentUser(token);
+          setCustomer(customerData);
+          localStorage.setItem("customer", JSON.stringify(customerData));
+        } catch (apiErr) {
+          // If API also fails, clear everything
+          localStorage.removeItem("token");
+          localStorage.removeItem("customer");
+          setCustomer(null);
+        }
+      }
+    } else if (token && !savedCustomer) {
+      // Token exists but no saved customer data, try to fetch from API
+      try {
+        const customerData = await getCurrentUser(token);
+        setCustomer(customerData);
+        localStorage.setItem("customer", JSON.stringify(customerData));
+      } catch (err) {
+        // If API fails, clear token
+        localStorage.removeItem("token");
+        setCustomer(null);
+      }
+    } else {
+      // No token, clear customer data
+      setCustomer(null);
     }
     setIsLoading(false);
   };
 
-  const login = (userData: User) => {
-    setUser(userData);
-    localStorage.setItem("token", "mock-token");
+  const login = (customerData: Customer) => {
+    // Store token
+    if (customerData.token) {
+      localStorage.setItem("token", customerData.token);
+    }
+    
+    // Store customer data in localStorage
+    localStorage.setItem("customer", JSON.stringify(customerData));
+    
+    // Set customer data in state
+    setCustomer(customerData);
   };
 
-  const loginWithResponse = (response: { token: string; name: string; email: string; role?: string }) => {
-    setUser({
-      name: response.name,
-      email: response.email,
-      role: response.role || "user"
-    });
-    localStorage.setItem("token", response.token);
+  const loginWithResponse = (customer: Customer) => {
+    // Store token first
+    if (customer.token) {
+      localStorage.setItem("token", customer.token);
+    }
+    
+    // Prepare customer data
+    const customerData = {
+      id: customer.id,
+      username: customer.username,
+      email: customer.email,
+      role: customer.role || "user",
+      createdAt: customer.createdAt,
+      fullName: customer.fullName,
+      phone: customer.phone,
+      updatedAt: customer.updatedAt
+    };
+    
+    // Store customer data in localStorage
+    localStorage.setItem("customer", JSON.stringify(customerData));
+    
+    // Set customer data in state
+    setCustomer(customerData);
   };
 
   const logout = () => {
@@ -50,9 +104,10 @@ export function useAuth() {
     const confirmed = window.confirm("Bạn có chắc chắn muốn đăng xuất?");
     if (!confirmed) return false;
 
-    // Clear user data
+    // Clear customer data
     localStorage.removeItem("token");
-    setUser(null);
+    localStorage.removeItem("customer");
+    setCustomer(null);
     
     // Show success message
     alert("Đăng xuất thành công!");
@@ -62,10 +117,10 @@ export function useAuth() {
     return true;
   };
 
-  const isAuthenticated = !!user;
+  const isAuthenticated = !!customer;
 
   return {
-    user,
+    customer,
     isLoading,
     isAuthenticated,
     login,

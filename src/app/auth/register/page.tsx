@@ -4,58 +4,53 @@ import type React from "react";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { register } from "@/app/auth/services/auth";
-import { useAuth } from "@/hooks/useAuth";
+import { registerUser } from "@/app/auth/services/auth";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { loginWithResponse } = useAuth();
   const [formData, setFormData] = useState({
-    name: "",
+    fullName: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
+  const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
+    setMessage("");
 
     // Validation
     if (formData.password !== formData.confirmPassword) {
-      setError("Mật khẩu xác nhận không khớp");
+      setMessage("Mật khẩu xác nhận không khớp");
       setIsLoading(false);
       return;
     }
 
     if (formData.password.length < 6) {
-      setError("Mật khẩu phải có ít nhất 6 ký tự");
+      setMessage("Mật khẩu phải có ít nhất 6 ký tự");
       setIsLoading(false);
       return;
     }
 
     try {
-      const result = await register({
-        name: formData.name,
+      const result = await registerUser({
+        username: formData.email.split("@")[0],
         email: formData.email,
         password: formData.password,
+        fullName: formData.fullName,
       });
+      setMessage(result.message);
       
-      // Use the auth hook to set user data
-      loginWithResponse(result);
-      setSuccess(true);
-      
-      // Redirect to home page after successful registration
+      // Redirect to login page after successful registration
       setTimeout(() => {
-        router.push("/");
+        router.push("/auth/login");
       }, 2000);
       
     } catch (err: any) {
-      setError(err.message || "Đăng ký không thành công");
+      setMessage(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -68,18 +63,7 @@ export default function RegisterPage() {
     });
   };
 
-  if (success) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-card p-8 text-center">
-          <div className="text-green-600 text-6xl mb-4">✅</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Đăng ký thành công!</h1>
-          <p className="text-gray-600 mb-4">Chào mừng bạn đến với MH Shop!</p>
-          <p className="text-sm text-gray-500">Đang chuyển hướng về trang chủ...</p>
-        </div>
-      </div>
-    );
-  }
+
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
@@ -91,14 +75,14 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
               Họ và tên
             </label>
             <input
               type="text"
-              id="name"
-              name="name"
-              value={formData.name}
+              id="fullName"
+              name="fullName"
+              value={formData.fullName}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brandBlue focus:border-transparent"
               placeholder="Nhập họ và tên của bạn"
@@ -181,7 +165,15 @@ export default function RegisterPage() {
             {isLoading ? "Đang đăng ký..." : "Đăng ký tài khoản"}
           </button>
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {message && (
+            <p className={`text-sm text-center ${
+              message.includes("thành công") || message.includes("success") 
+                ? "text-green-600" 
+                : "text-red-500"
+            }`}>
+              {message}
+            </p>
+          )}
         </form>
 
         <div className="mt-6 text-center">

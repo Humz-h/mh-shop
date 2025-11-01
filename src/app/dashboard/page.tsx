@@ -8,7 +8,7 @@ import { Button } from "@/components/UI/Button";
 import { RefreshCw, Package, TrendingUp, DollarSign } from "@/components/UI/icons";
 
 export default function DashboardPage() {
-  const { user, isAuthenticated } = useAuth();
+  const { customer, isAuthenticated } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -23,7 +23,7 @@ export default function DashboardPage() {
       const newOrders = await getOrders({
         page: pageNum,
         pageSize: 10,
-        userId: user?.id || 21, // Fallback to mock user ID
+        customerId: customer?.id,
         includeItems: false
       });
 
@@ -34,8 +34,8 @@ export default function DashboardPage() {
       }
 
       setHasMore(newOrders.length === 10);
-    } catch (err: any) {
-      setError(err.message || "Không thể tải danh sách đơn hàng");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Không thể tải danh sách đơn hàng");
     } finally {
       setLoading(false);
     }
@@ -66,8 +66,8 @@ export default function DashboardPage() {
   // Calculate statistics
   const totalOrders = orders.length;
   const totalAmount = orders.reduce((sum, order) => sum + order.totalAmount, 0);
-  const paidOrders = orders.filter(order => order.status === "paid").length;
-  const pendingOrders = orders.filter(order => order.status === "pending").length;
+  const paidOrders = orders.filter(order => order.status.toLowerCase() === "paid").length;
+  const pendingOrders = orders.filter(order => order.status.toLowerCase() === "pending").length;
 
   if (!isAuthenticated) {
     return (
@@ -88,7 +88,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between h-16">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-              <p className="text-sm text-gray-600">Chào mừng, {user?.name}!</p>
+              <p className="text-sm text-gray-600">Chào mừng, {customer?.username}!</p>
             </div>
             <Button
               onClick={handleRefresh}

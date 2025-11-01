@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Minus, Plus, Trash2 } from "@/components/UI/icons";
 import Link from "next/link";
+import { getImageUrl } from "@/lib/utils";
 
 function getInitialCartFromQuery(): { id: number; name: string; price: number; image?: string; quantity: number }[] {
   if (typeof window === "undefined") return []
@@ -80,7 +81,7 @@ export default function CartPage() {
                   <div key={item.id}>
                     <div className="flex items-center space-x-4 py-4">
                       <img
-                        src={item.image || "/placeholder.svg"}
+                        src={getImageUrl(item.image)}
                         alt={item.name}
                         className="w-20 h-20 object-cover rounded-lg"
                       />
@@ -143,9 +144,12 @@ export default function CartPage() {
               </div>
               
               <div className="space-y-3">
-                <button className="w-full bg-brandBlue text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                <Link 
+                  href="/checkout"
+                  className="block w-full bg-brandBlue text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors text-center"
+                >
                   Thanh toán
-                </button>
+                </Link>
                 <Link 
                   href="/products" 
                   className="block w-full text-center text-brandBlue py-2 px-4 rounded-lg font-medium hover:bg-blue-50 transition-colors"

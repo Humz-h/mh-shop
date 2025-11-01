@@ -6,27 +6,79 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { login } from "@/app/auth/services/auth";
 import { useAuth } from "@/hooks/useAuth";
+import type { Customer } from "@/types";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { loginWithResponse } = useAuth();
+  const { loginWithResponse, isAuthenticated, isLoading: authLoading } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const [error, setError] = useState("");
   const [token, setToken] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    setToken("");
+    
     try {
       const result = await login({ email: formData.email, password: formData.password });
-      loginWithResponse(result);
-      setToken(result.token);
+      
+      if (!result || !result.success || !result.data || !result.data.token || !result.data.user) {
+        setError(result?.message || "Đăng nhập không thành công. Vui lòng thử lại.");
+        setIsLoading(false);
+        return;
+      }
+
+      const { token, user } = result.data;
+
+      // Lưu token trước
+      localStorage.setItem("token", token);
+
+      // Map user data từ API response sang Customer format
+      // API trả về role là "customer", cần map sang "user"
+      const customerData: Customer = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: (user.role === "admin" || user.role === "Admin") ? "admin" : "user",
+        createdAt: user.createdAt,
+        fullName: user.fullName || null,
+        token: token
+      };
+      
+      // Lưu customer data và cập nhật state
+      loginWithResponse(customerData);
+      setToken(token);
       setError("");
-      router.push("/");
-    } catch (err: any) {
-      setError("Đăng nhập không thành công");
+      
+      // Redirect sau khi delay nhỏ để đảm bảo state được cập nhật
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 100);
+    } catch (err: unknown) {
+      setIsLoading(false);
+      if (err instanceof Error) {
+        if (err.message.includes("401") || err.message.includes("Unauthorized")) {
+          setError("Email hoặc mật khẩu không đúng");
+        } else if (err.message.includes("404") || err.message.includes("Not Found")) {
+          setError("Không thể kết nối đến server. Vui lòng thử lại sau.");
+        } else if (err.message.includes("500") || err.message.includes("Internal Server Error")) {
+          setError("Lỗi server. Vui lòng thử lại sau.");
+        } else if (err.message.includes("timeout")) {
+          setError("Request timeout - server không phản hồi");
+        } else if (err.message.includes("Failed to fetch") || err.message.includes("NetworkError")) {
+          setError("Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.");
+        } else {
+          setError(err.message || "Đăng nhập không thành công. Vui lòng thử lại.");
+        }
+      } else {
+        setError("Đăng nhập không thành công. Vui lòng thử lại.");
+      }
     }
   };
 
@@ -37,12 +89,27 @@ export default function LoginPage() {
     });
   };
 
+  // Redirect if already authenticated
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brandBlue"></div>
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
+    router.push("/");
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-card p-8">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-900">Đăng nhập</h1>
           <p className="text-gray-600 mt-2">Chào mừng bạn quay trở lại!</p>
+          
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -90,10 +157,19 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="w-full bg-brandBlue text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors font-medium"
+            disabled={isLoading}
+            className="w-full bg-brandBlue text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
-            Đăng nhập
+            {isLoading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Đang đăng nhập...
+              </>
+            ) : (
+              "Đăng nhập"
+            )}
           </button>
+          
 
           {error && <p className="text-red-500 text-sm">{error}</p>}
           {token && <p className="text-green-600 text-sm">Đăng nhập thành công ✅</p>}

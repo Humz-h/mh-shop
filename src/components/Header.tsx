@@ -4,25 +4,22 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/UI/Button";
 import { Badge } from "@/components/UI/badge";
-import { Heart, ShoppingCart, Menu, User, LogOut, Settings } from "@/components/UI/icons";
-import CategoryMenu from "@/components/CategoryGridVN";
+import { Heart, ShoppingCart, Menu, User } from "@/components/UI/icons";
 import { FixedSidebar } from "@/components/FixedSidebar";
 import { useAuth } from "@/hooks/useAuth";
-import { LogoutButton } from "@/components/LogoutButton";
 
 export function Header() {
-  const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
-  const { user, logout, isAuthenticated } = useAuth();
+  const [isCustomerDropdownOpen, setIsCustomerDropdownOpen] = useState(false);
+  const { customer, logout, isAuthenticated } = useAuth();
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (isUserDropdownOpen) {
+      if (isCustomerDropdownOpen) {
         const target = event.target as Element;
-        if (!target.closest('.user-dropdown')) {
-          setIsUserDropdownOpen(false);
+        if (!target.closest('.customer-dropdown')) {
+          setIsCustomerDropdownOpen(false);
         }
       }
     };
@@ -31,7 +28,7 @@ export function Header() {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isUserDropdownOpen]);
+  }, [isCustomerDropdownOpen]);
 
 
   return (
@@ -105,24 +102,23 @@ export function Header() {
               <span className="hidden lg:block">Yêu thích</span>
             </Button>
 
-            {/* User Section */}
+            {/* Customer Section */}
             {isAuthenticated ? (
-              <div className="relative user-dropdown">
+              <div className="relative customer-dropdown">
                 <button
-                  onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                  className="flex items-center gap-2 text-sm px-3 py-2 rounded-md text-gray-700 hover:text-green-600 hover:bg-green-50 transition-colors"
+                  onClick={() => setIsCustomerDropdownOpen(!isCustomerDropdownOpen)}
+                  className="flex items-center gap-2 text-sm px-3 py-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors"
                 >
-                  <User className="h-5 w-5" />
-                  <span className="hidden sm:block">{user?.name}</span>
+                  <span>{customer?.username}</span>
                 </button>
 
-                {/* User Dropdown */}
-                {isUserDropdownOpen && (
+                {/* Customer Dropdown */}
+                {isCustomerDropdownOpen && (
                   <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                    {/* User Info */}
-                    <div className="px-4 py-3 border-b border-gray-100">
-                      <div className="font-semibold text-gray-900">{user?.name}</div>
-                      <div className="text-sm text-gray-500">{user?.email}</div>
+                    {/* Customer Info */}
+                    <div className="px-4 py-3 border-b border-gray-200">
+                      <div className="font-bold text-gray-900 text-base">{customer?.username}</div>
+                      <div className="text-sm text-gray-500 mt-1">{customer?.email}</div>
                     </div>
 
                     {/* Menu Items */}
@@ -130,32 +126,34 @@ export function Header() {
                       <Link
                         href="/profile"
                         className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                        onClick={() => setIsUserDropdownOpen(false)}
+                        onClick={() => setIsCustomerDropdownOpen(false)}
                       >
-                        <User className="h-4 w-4" />
                         Thông tin tài khoản
                       </Link>
                       <Link
                         href="/dashboard"
                         className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                        onClick={() => setIsUserDropdownOpen(false)}
+                        onClick={() => setIsCustomerDropdownOpen(false)}
                       >
-                        <Settings className="h-4 w-4" />
                         Dashboard
                       </Link>
-                      <LogoutButton 
-                        variant="danger"
-                        className="w-full text-left justify-start px-4 py-2"
-                        onClick={() => setIsUserDropdownOpen(false)}
-                      />
+                      <button
+                        onClick={() => {
+                          setIsCustomerDropdownOpen(false);
+                          logout();
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
+                      >
+                        Đăng xuất
+                      </button>
                     </div>
                   </div>
                 )}
               </div>
             ) : (
-              <Link href="/auth/login" className="flex items-center gap-2 text-sm px-3 py-2 rounded-md text-gray-700 hover:text-green-600 hover:bg-green-50 transition-colors">
+              <Link href="/auth/login" className="flex items-center gap-2 text-sm px-3 py-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors">
                 <User className="h-5 w-5" />
-                <span className="hidden sm:block">Đăng nhập</span>
+                <span>Đăng nhập</span>
               </Link>
             )}
 

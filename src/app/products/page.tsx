@@ -7,6 +7,7 @@ import { Button } from "@/components/UI/Button";
 import { Star, Heart, ShoppingCart } from "@/components/UI/icons";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { getImageUrl, getDisplayPrice, formatCurrency } from "@/lib/utils";
 
 export default function ProductsPage() {
   const { products, loading, error } = useProducts();
@@ -17,12 +18,7 @@ export default function ProductsPage() {
     setFavorites((prev) => (prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]));
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price);
-  };
+  const formatPrice = (price: number | null | undefined) => formatCurrency(price, "VND");
 
   if (loading) {
     return (
@@ -66,7 +62,7 @@ export default function ProductsPage() {
             <CardContent className="p-0">
               <div className="relative">
                 <img
-                  src={product.imageUrl || "/placeholder.svg"}
+                  src={getImageUrl(product.imageUrl)}
                   alt={product.name}
                   className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                 />
@@ -105,7 +101,16 @@ export default function ProductsPage() {
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <span className="text-xl font-bold text-primary">{formatPrice(product.price)}</span>
+                  {product.salePrice !== undefined && product.salePrice !== null && typeof product.salePrice === 'number' && !isNaN(product.salePrice) ? (
+                    <>
+                      <span className="text-xl font-bold text-primary">{formatPrice(product.salePrice)}</span>
+                      {product.price && typeof product.price === 'number' && !isNaN(product.price) && product.salePrice < product.price && (
+                        <span className="text-sm text-muted-foreground line-through">{formatPrice(product.price)}</span>
+                      )}
+                    </>
+                  ) : (
+                    <span className="text-xl font-bold text-primary">{formatPrice(product.price)}</span>
+                  )}
                   {product.stock !== undefined && (
                     <span className="text-sm text-muted-foreground">
                       Còn {product.stock} sản phẩm
@@ -124,12 +129,14 @@ export default function ProductsPage() {
                       if (existing) {
                         existing.quantity += 1
                       } else {
-                        cart.push({ id: product.id, name: product.name, price: product.price, image: product.imageUrl || undefined, quantity: 1 })
+                        const displayPrice = getDisplayPrice(product.price, product.salePrice);
+                        cart.push({ id: product.id, name: product.name, price: displayPrice, image: product.imageUrl || undefined, quantity: 1 })
                       }
                       localStorage.setItem("cart", JSON.stringify(cart))
                     } catch {}
                     // include params for first-load fallback
-                    const params = new URLSearchParams({ id: String(product.id), name: product.name, price: String(product.price), image: product.imageUrl || "" })
+                    const displayPrice = getDisplayPrice(product.price, product.salePrice);
+                    const params = new URLSearchParams({ id: String(product.id), name: product.name, price: String(displayPrice), image: product.imageUrl || "" })
                     router.push(`/cart?${params.toString()}`)
                   }}
                 >

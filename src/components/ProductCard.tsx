@@ -7,6 +7,7 @@ import { Badge } from "@/components/UI/badge";
 import type { Product } from "@/types";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { getImageUrl, getDisplayPrice, formatCurrency } from "@/lib/utils";
 
 interface ProductCardProps {
   product: Product;
@@ -19,8 +20,7 @@ export function ProductCard({ product, discount, isNew, isBestSeller }: ProductC
   const [isFavorite, setIsFavorite] = useState(false);
   const router = useRouter();
 
-  const formatPrice = (price: number) =>
-    new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(price);
+  const formatPrice = (price: number | null | undefined) => formatCurrency(price, "VND");
 
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 border border-border bg-card overflow-hidden">
@@ -28,7 +28,7 @@ export function ProductCard({ product, discount, isNew, isBestSeller }: ProductC
         {/* Product image */}
         <div className="relative overflow-hidden">
           <img
-            src={product.imageUrl || "/placeholder.svg"}
+            src={getImageUrl(product.imageUrl)}
             alt={product.name}
             className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
           />
@@ -74,7 +74,16 @@ export function ProductCard({ product, discount, isNew, isBestSeller }: ProductC
 
           {/* Price */}
           <div className="flex items-center gap-2 mb-3">
-            <span className="font-bold text-lg text-primary">{formatPrice(product.price)}</span>
+            {product.salePrice !== undefined && product.salePrice !== null && typeof product.salePrice === 'number' && !isNaN(product.salePrice) ? (
+              <>
+                <span className="font-bold text-lg text-primary">{formatPrice(product.salePrice)}</span>
+                {product.price && typeof product.price === 'number' && !isNaN(product.price) && product.salePrice < product.price && (
+                  <span className="text-sm text-muted-foreground line-through">{formatPrice(product.price)}</span>
+                )}
+              </>
+            ) : (
+              <span className="font-bold text-lg text-primary">{formatPrice(product.price)}</span>
+            )}
           </div>
 
           {/* Add to cart button */}
@@ -89,7 +98,8 @@ export function ProductCard({ product, discount, isNew, isBestSeller }: ProductC
                 if (existing) {
                   existing.quantity += 1
                 } else {
-                  cart.push({ id: product.id, name: product.name, price: product.price, image: product.imageUrl || undefined, quantity: 1 })
+                  const displayPrice = getDisplayPrice(product.price, product.salePrice);
+                  cart.push({ id: product.id, name: product.name, price: displayPrice, image: product.imageUrl || undefined, quantity: 1 })
                 }
                 localStorage.setItem("cart", JSON.stringify(cart))
               } catch {}
