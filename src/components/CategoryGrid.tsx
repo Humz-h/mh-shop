@@ -8,6 +8,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useProducts } from "@/hooks/useProducts"
 import { getImageUrl, getDisplayPrice, formatCurrency } from "@/lib/utils"
+import { PRODUCT_IMAGE_ASPECT_RATIO } from "@/lib/imageConfig"
 
 export function CategoryGrid() {
   const { products, loading, error } = useProducts()
@@ -33,7 +34,7 @@ export function CategoryGrid() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="animate-pulse">
-                <div className="bg-gray-200 h-64 rounded-xl"></div>
+                <div className={`${PRODUCT_IMAGE_ASPECT_RATIO} w-full bg-gray-200 rounded-xl`}></div>
                 <div className="mt-4 space-y-2">
                   <div className="h-4 bg-gray-200 rounded"></div>
                   <div className="h-4 bg-gray-200 rounded w-3/4"></div>
@@ -78,22 +79,31 @@ export function CategoryGrid() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product) => (
-            <Card key={product.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden rounded-xl">
-              <CardContent className="p-0">
-                <div className="relative">
-                  <img
-                    src={getImageUrl(product.imageUrl)}
-                    alt={product.name}
-                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute top-3 left-3">
+            <Card 
+              key={product.id} 
+              className="group hover:shadow-lg transition-all duration-300 overflow-hidden rounded-xl flex flex-col"
+            >
+              <CardContent className="p-0 flex flex-col h-full">
+                {/* Khối 1: Hình ảnh */}
+                <div className="relative p-2">
+                  <div className={`${PRODUCT_IMAGE_ASPECT_RATIO} w-full bg-gray-100 rounded-lg overflow-hidden cursor-pointer`} onClick={() => router.push(`/products/${product.id}`)}>
+                    <img
+                      src={getImageUrl(product.imageUrl)}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="absolute top-4 left-4">
                     <Badge variant="default">Mới</Badge>
                   </div>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full"
-                    onClick={() => toggleFavorite(product.id)}
+                    className="absolute top-4 right-4 bg-white/80 hover:bg-white rounded-full"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(product.id);
+                    }}
                   >
                     <Heart
                       className={`h-4 w-4 ${
@@ -103,16 +113,25 @@ export function CategoryGrid() {
                   </Button>
                 </div>
 
-                <div className="p-4 space-y-3">
+                {/* Khối 2: Văn bản - Thông tin sản phẩm */}
+                <div className="p-4 flex-1">
                   <div>
-                    <p className="text-sm text-muted-foreground">Sản phẩm</p>
-                    <h3 className="font-semibold text-lg text-balance">{product.name}</h3>
+                    <p className="text-sm text-muted-foreground mb-1">Sản phẩm</p>
+                    <h3 
+                      className="font-semibold text-lg text-balance hover:text-primary transition-colors cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/products/${product.id}`);
+                      }}
+                    >
+                      {product.name}
+                    </h3>
                     {product.description && (
-                      <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{product.description}</p>
+                      <p className="text-sm text-muted-foreground mt-1 mb-3 line-clamp-2">{product.description}</p>
                     )}
                   </div>
 
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 mb-2">
                     <div className="flex items-center">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                       <span className="text-sm font-medium ml-1">4.5</span>
@@ -124,12 +143,12 @@ export function CategoryGrid() {
                     {product.salePrice !== undefined && product.salePrice !== null && typeof product.salePrice === 'number' && !isNaN(product.salePrice) ? (
                       <>
                         <span className="text-xl font-bold text-primary">{formatPrice(product.salePrice)}</span>
-                        {product.price && typeof product.price === 'number' && !isNaN(product.price) && product.salePrice < product.price && (
-                          <span className="text-sm text-muted-foreground line-through">{formatPrice(product.price)}</span>
+                        {(product.originalPrice || product.price) && typeof (product.originalPrice || product.price) === 'number' && !isNaN(product.originalPrice || product.price || 0) && product.salePrice < (product.originalPrice || product.price || 0) && (
+                          <span className="text-sm text-muted-foreground line-through">{formatPrice(product.originalPrice || product.price)}</span>
                         )}
                       </>
                     ) : (
-                      <span className="text-xl font-bold text-primary">{formatPrice(product.price)}</span>
+                      <span className="text-xl font-bold text-primary">{formatPrice(product.originalPrice || product.price || 0)}</span>
                     )}
                     {product.stock !== undefined && (
                       <span className="text-sm text-muted-foreground">
@@ -137,10 +156,14 @@ export function CategoryGrid() {
                       </span>
                     )}
                   </div>
+                </div>
 
+                {/* Khối 3: Nút thêm vào giỏ hàng */}
+                <div className="p-4 pt-0">
                   <Button
                     className="w-full group rounded-lg"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       // persist to localStorage cart
                       try {
                         const raw = typeof window !== "undefined" ? localStorage.getItem("cart") : null
@@ -149,13 +172,13 @@ export function CategoryGrid() {
                         if (existing) {
                           existing.quantity += 1
                         } else {
-                          const displayPrice = getDisplayPrice(product.price, product.salePrice);
+                          const displayPrice = getDisplayPrice(product.originalPrice || product.price || 0, product.salePrice);
                           cart.push({ id: product.id, name: product.name, price: displayPrice, image: product.imageUrl || undefined, quantity: 1 })
                         }
                         localStorage.setItem("cart", JSON.stringify(cart))
                       } catch {}
                       // include params for first-load fallback
-                      const displayPrice = getDisplayPrice(product.price, product.salePrice);
+                      const displayPrice = getDisplayPrice(product.originalPrice || product.price || 0, product.salePrice);
                       const params = new URLSearchParams({ id: String(product.id), name: product.name, price: String(displayPrice), image: product.imageUrl || "" })
                       router.push(`/cart?${params.toString()}`)
                     }}
