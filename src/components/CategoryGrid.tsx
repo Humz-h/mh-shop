@@ -6,6 +6,8 @@ import { Badge } from "@/components/UI/badge"
 import { Star, Heart, ShoppingCart } from "@/components/UI/icons"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
+import Image from "next/image"
 import { useProducts } from "@/hooks/useProducts"
 import { getImageUrl, getDisplayPrice, formatCurrency } from "@/lib/utils"
 import { PRODUCT_IMAGE_ASPECT_RATIO } from "@/lib/imageConfig"
@@ -74,7 +76,7 @@ export function CategoryGrid() {
             <h2 className="text-3xl font-bold text-balance">Sản phẩm nổi bật</h2>
             <p className="text-muted-foreground mt-2">Khám phá những sản phẩm công nghệ hàng đầu</p>
           </div>
-          <a href="/products" className="inline-flex items-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 text-sm font-medium">Xem tất cả sản phẩm</a>
+          <Link href="/products" className="inline-flex items-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 text-sm font-medium">Xem tất cả sản phẩm</Link>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -86,11 +88,12 @@ export function CategoryGrid() {
               <CardContent className="p-0 flex flex-col h-full">
                 {/* Khối 1: Hình ảnh */}
                 <div className="relative p-2">
-                  <div className={`${PRODUCT_IMAGE_ASPECT_RATIO} w-full bg-gray-100 rounded-lg overflow-hidden cursor-pointer`} onClick={() => router.push(`/products/${product.id}`)}>
-                    <img
+                  <div className={`${PRODUCT_IMAGE_ASPECT_RATIO} w-full bg-gray-100 rounded-lg overflow-hidden cursor-pointer relative`} onClick={() => router.push(`/products/${product.id}`)}>
+                    <Image
                       src={getImageUrl(product.imageUrl)}
                       alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                   <div className="absolute top-4 left-4">

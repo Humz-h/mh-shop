@@ -27,7 +27,7 @@ export default function ProfilePage() {
     return null;
   }
 
-  const formatDate = (dateString: string | null) => {
+  const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return "Chưa cập nhật";
     try {
       return new Date(dateString).toLocaleDateString("vi-VN", {

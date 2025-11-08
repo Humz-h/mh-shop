@@ -49,8 +49,8 @@ export default function RegisterPage() {
         router.push("/auth/login");
       }, 2000);
       
-    } catch (err: any) {
-      setMessage(err.message);
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "Đã xảy ra lỗi khi đăng ký");
     } finally {
       setIsLoading(false);
     }

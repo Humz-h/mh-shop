@@ -45,6 +45,7 @@ export default function DashboardPage() {
     if (isAuthenticated) {
       loadOrders(1, false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
 
   const handleRefresh = () => {

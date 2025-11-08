@@ -8,8 +8,9 @@ import { Button } from "@/components/UI/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/UI/card";
 import { Badge } from "@/components/UI/badge";
 import { Star, ShoppingCart, Heart, ArrowLeft } from "@/components/UI/icons";
-import { getImageUrl, formatCurrency, getDisplayPrice } from "@/lib/utils";
+import { getImageUrl, formatCurrency } from "@/lib/utils";
 import { PRODUCT_DETAIL_IMAGE_ASPECT_RATIO } from "@/lib/imageConfig";
+import Image from "next/image";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -28,6 +29,7 @@ export default function ProductDetailPage() {
       setError("ID sản phẩm không hợp lệ");
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productId]);
 
   const loadProduct = async () => {
@@ -52,7 +54,8 @@ export default function ProductDetailPage() {
     
     try {
       const raw = typeof window !== "undefined" ? localStorage.getItem("cart") : null;
-      const cart: { id: number; name: string; price: number; image?: string; quantity: number }[] = raw ? JSON.parse(raw) : [];
+      type CartItem = { id: number; name: string; price: number; image?: string; quantity: number; variantId?: number };
+      const cart: CartItem[] = raw ? JSON.parse(raw) : [];
       
       // Lấy giá từ variant nếu có, nếu không thì lấy từ product
       const variant = product.productVariants?.find(v => v.id === selectedVariant);
@@ -62,18 +65,21 @@ export default function ProductDetailPage() {
             ? product.salePrice 
             : (product.originalPrice || product.price || 0));
       
-      const existing = cart.find(c => c.id === product.id && (!selectedVariant || (c as any).variantId === selectedVariant));
+      const existing = cart.find(c => c.id === product.id && (!selectedVariant || c.variantId === selectedVariant));
       if (existing) {
         existing.quantity += 1;
       } else {
-        cart.push({
+        const newItem: CartItem = {
           id: product.id,
           name: product.name,
           price: priceToUse,
           image: product.imageUrl || undefined,
           quantity: 1,
-          ...(selectedVariant ? { variantId: selectedVariant } : {})
-        } as any);
+        };
+        if (selectedVariant) {
+          newItem.variantId = selectedVariant;
+        }
+        cart.push(newItem);
       }
       localStorage.setItem("cart", JSON.stringify(cart));
       router.push("/cart");
@@ -144,10 +150,11 @@ export default function ProductDetailPage() {
         <div className="relative flex items-center justify-center">
           <div className="w-full max-w-md p-4">
             <div className={`${PRODUCT_DETAIL_IMAGE_ASPECT_RATIO} rounded-xl overflow-hidden bg-gray-100 relative`}>
-              <img
+              <Image
                 src={getImageUrl(product.imageUrl)}
                 alt={product.name}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
               />
               {product.discountPercent && product.discountPercent > 0 && (
                 <Badge className="absolute top-4 left-4 bg-red-500 text-white">

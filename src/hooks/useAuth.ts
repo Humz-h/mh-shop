@@ -30,13 +30,13 @@ export function useAuth() {
         // Try to parse saved customer data
         const customerData = JSON.parse(savedCustomer);
         setCustomer(customerData);
-      } catch (err) {
+      } catch {
         // If parsing fails, try to fetch from API
         try {
           const customerData = await getCurrentUser(token);
           setCustomer(customerData);
           localStorage.setItem("customer", JSON.stringify(customerData));
-        } catch (apiErr) {
+        } catch {
           // If API also fails, clear everything
           localStorage.removeItem("token");
           localStorage.removeItem("customer");
@@ -49,7 +49,7 @@ export function useAuth() {
         const customerData = await getCurrentUser(token);
         setCustomer(customerData);
         localStorage.setItem("customer", JSON.stringify(customerData));
-      } catch (err) {
+      } catch {
         // If API fails, clear token
         localStorage.removeItem("token");
         setCustomer(null);

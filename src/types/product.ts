@@ -22,6 +22,14 @@ export interface ProductVariant {
   product?: Product | null;
 }
 
+export interface Inventory {
+  id: number;
+  productId: number;
+  quantity?: number;
+  location?: string;
+  [key: string]: unknown;
+}
+
 export interface Product {
   id: number;
   name: string;
@@ -39,5 +47,5 @@ export interface Product {
   updatedAt?: string;
   productDetails?: ProductDetail[];
   productVariants?: ProductVariant[];
-  inventories?: any;
+  inventories?: Inventory[];
 } 

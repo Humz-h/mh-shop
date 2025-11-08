@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useRef, useState, useEffect } from "react"
+import Image from "next/image"
 
 interface HeroBannerProps {
   images?: string[]
@@ -42,6 +43,7 @@ export function HeroBanner({
     if (!autoPlayMs) return
     const id = setInterval(() => scrollToIndex(index + 1), autoPlayMs)
     return () => clearInterval(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, autoPlayMs])
 
   // Keep snap position in sync on resize
@@ -49,6 +51,7 @@ export function HeroBanner({
     const onResize = () => scrollToIndex(index)
     window.addEventListener("resize", onResize)
     return () => window.removeEventListener("resize", onResize)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index])
 
   return (
@@ -58,11 +61,12 @@ export function HeroBanner({
         className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar"
       >
         {banners.map((src, i) => (
-          <div key={i} className="w-full flex-shrink-0 snap-center">
-            <img
+          <div key={i} className="w-full flex-shrink-0 snap-center relative h-64 sm:h-80 md:h-96 lg:h-[28rem]">
+            <Image
               src={src}
               alt={`banner-${i + 1}`}
-              className="h-64 w-full object-contain sm:h-80 md:h-96 lg:h-[28rem]"
+              fill
+              className="object-contain"
             />
           </div>
         ))}

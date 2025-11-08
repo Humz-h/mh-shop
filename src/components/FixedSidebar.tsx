@@ -135,7 +135,7 @@ export function FixedSidebar({ isOpen, onClose }: FixedSidebarProps) {
       {/* Categories Section */}
       <div className="p-6">
         <div className="space-y-1">
-          {CATEGORIES.map((category, index) => (
+          {CATEGORIES.map((category) => (
             <Link
               key={category.name}
               href={category.href}

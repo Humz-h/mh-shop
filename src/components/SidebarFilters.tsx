@@ -33,10 +33,10 @@ export function SidebarFilters() {
   }
 
   const handleMinChange = (val: number) => {
-    setPriceRange(([min, max]) => [Math.min(val, max - 100000), max])
+    setPriceRange(([, max]) => [Math.min(val, max - 100000), max])
   }
   const handleMaxChange = (val: number) => {
-    setPriceRange(([min, max]) => [min, Math.max(val, min + 100000)])
+    setPriceRange(([min]) => [min, Math.max(val, min + 100000)])
   }
 
   return (

@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { getImageUrl, getDisplayPrice, formatCurrency } from "@/lib/utils";
 import { PRODUCT_IMAGE_ASPECT_RATIO } from "@/lib/imageConfig";
+import Image from "next/image";
 
 export default function ProductsPage() {
   const { products, loading, error } = useProducts();
@@ -66,11 +67,12 @@ export default function ProductsPage() {
             <CardContent className="p-0 flex flex-col h-full">
               {/* Khối 1: Hình ảnh */}
               <div className="relative p-2">
-                <div className={`${PRODUCT_IMAGE_ASPECT_RATIO} w-full bg-gray-100 rounded-lg overflow-hidden cursor-pointer`} onClick={() => router.push(`/products/${product.id}`)}>
-                  <img
+                <div className={`${PRODUCT_IMAGE_ASPECT_RATIO} w-full bg-gray-100 rounded-lg overflow-hidden cursor-pointer relative`} onClick={() => router.push(`/products/${product.id}`)}>
+                  <Image
                     src={getImageUrl(product.imageUrl)}
                     alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <div className="absolute top-4 left-4">

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/UI/Button";
 import { ChevronLeft, ChevronRight, Gift } from "@/components/UI/icons";
 
 interface Product {

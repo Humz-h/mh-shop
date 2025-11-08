@@ -7,6 +7,7 @@ import { Badge } from "@/components/UI/badge";
 import type { Product } from "@/types";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { getImageUrl, getDisplayPrice, formatCurrency } from "@/lib/utils";
 import { PRODUCT_IMAGE_ASPECT_RATIO } from "@/lib/imageConfig";
 
@@ -28,11 +29,12 @@ export function ProductCard({ product, discount, isNew, isBestSeller }: ProductC
       <CardContent className="p-0 flex flex-col h-full">
         {/* Khối 1: Hình ảnh */}
         <div className="relative overflow-hidden p-2">
-          <div className={`${PRODUCT_IMAGE_ASPECT_RATIO} w-full bg-gray-100 rounded-lg overflow-hidden`}>
-            <img
+          <div className={`${PRODUCT_IMAGE_ASPECT_RATIO} w-full bg-gray-100 rounded-lg overflow-hidden relative`}>
+            <Image
               src={getImageUrl(product.imageUrl)}
               alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
           </div>
 

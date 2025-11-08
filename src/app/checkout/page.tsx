@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
 import { createOrder } from "@/services/order";
 import { formatCurrency, getImageUrl } from "@/lib/utils";
@@ -38,7 +39,7 @@ export default function CheckoutPage() {
           setCartItems(parsed);
         }
       }
-    } catch (err) {
+    } catch {
       // Ignore parse errors
     }
   }, []);
@@ -173,14 +174,14 @@ export default function CheckoutPage() {
                 {cartItems.map((item, index) => (
                   <div key={item.id}>
                     <div className="flex items-center space-x-4 py-4">
-                      <img
-                        src={getImageUrl(item.image)}
-                        alt={item.name}
-                        className="w-20 h-20 object-cover rounded-lg"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = "/placeholder.svg";
-                        }}
-                      />
+                      <div className="relative w-20 h-20 rounded-lg overflow-hidden">
+                        <Image
+                          src={getImageUrl(item.image) || "/placeholder.svg"}
+                          alt={item.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
                       <div className="flex-1">
                         <h3 className="font-medium text-gray-900">{item.name}</h3>
                         <p className="text-sm text-gray-600 mt-1">
