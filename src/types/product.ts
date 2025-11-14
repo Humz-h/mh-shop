@@ -1,51 +1,30 @@
-export interface ProductDetail {
+export type ProductVariant = {
   id: number;
-  productId: number;
-  brand?: string;
-  origin?: string;
-  warranty?: string;
-  specifications?: string;
-  features?: string;
-  additionalInfo?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  product?: Product | null;
-}
-
-export interface ProductVariant {
-  id: number;
-  productId: number;
+  price: number;
+  name?: string;
   variantName?: string;
   attributes?: string;
-  price?: number;
-  sku?: string;
-  product?: Product | null;
-}
+};
 
-export interface Inventory {
+export type Product = {
+  title: string;
+  name?: string;
+  reviews: number;
+  price: number;
+  discountedPrice: number;
   id: number;
-  productId: number;
-  quantity?: number;
-  location?: string;
-  [key: string]: unknown;
-}
-
-export interface Product {
-  id: number;
-  name: string;
-  productCode?: string;
+  salePrice?: number | null;
   originalPrice?: number;
-  productGroup?: string;
   discountPercent?: number;
-  description?: string;
-  price?: number;
-  salePrice?: number;
-  imageUrl?: string;
+  productGroup?: string;
+  productCode?: string;
   stock?: number;
-  status?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-  productDetails?: ProductDetail[];
+  description?: string;
+  productDetails?: Array<{ id?: number; label: string; value: string; brand?: string; origin?: string; warranty?: number; specifications?: string; features?: string; additionalInfo?: string; [key: string]: unknown }>;
   productVariants?: ProductVariant[];
-  inventories?: Inventory[];
-} 
+  imageUrl?: string;
+  imgs?: {
+    thumbnails: string[];
+    previews: string[];
+  };
+};

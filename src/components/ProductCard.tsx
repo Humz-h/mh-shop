@@ -32,7 +32,7 @@ export function ProductCard({ product, discount, isNew, isBestSeller }: ProductC
           <div className={`${PRODUCT_IMAGE_ASPECT_RATIO} w-full bg-gray-100 rounded-lg overflow-hidden relative`}>
             <Image
               src={getImageUrl(product.imageUrl)}
-              alt={product.name}
+              alt={product.name || product.title || "Product"}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
@@ -121,7 +121,7 @@ export function ProductCard({ product, discount, isNew, isBestSeller }: ProductC
                   existing.quantity += 1
                 } else {
                   const displayPrice = getDisplayPrice(product.originalPrice || product.price || 0, product.salePrice);
-                  cart.push({ id: product.id, name: product.name, price: displayPrice, image: product.imageUrl || undefined, quantity: 1 })
+                  cart.push({ id: product.id, name: product.name || product.title || "Product", price: displayPrice, image: product.imageUrl || undefined, quantity: 1 })
                 }
                 localStorage.setItem("cart", JSON.stringify(cart))
               } catch {}

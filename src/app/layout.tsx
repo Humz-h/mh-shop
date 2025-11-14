@@ -2,8 +2,18 @@ import type React from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+import "./css/euclid-circular-a-font.css";
+import "./css/style.css";
+import Header from "@/components/Header/index";
+import Footer from "@/components/Footer/index";
+import { ModalProvider } from "./context/QuickViewModalContext";
+import { CartModalProvider } from "./context/CartSidebarModalContext";
+import { ReduxProvider } from "@/redux/provider";
+import QuickViewModal from "@/components/Common/QuickViewModal";
+import CartSidebarModal from "@/components/Common/CartSidebarModal";
+import { PreviewSliderProvider } from "./context/PreviewSliderContext";
+import PreviewSliderModal from "@/components/Common/PreviewSlider";
+import ScrollToTop from "@/components/Common/ScrollToTop";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -25,10 +35,22 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="vi">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Header />
-        {children}
+        <ReduxProvider>
+          <CartModalProvider>
+            <ModalProvider>
+              <PreviewSliderProvider>
+                <Header />
+                {children}
+                <QuickViewModal />
+                <CartSidebarModal />
+                <PreviewSliderModal />
+              </PreviewSliderProvider>
+            </ModalProvider>
+          </CartModalProvider>
+        </ReduxProvider>
+        <ScrollToTop />
         <Footer />
       </body>
     </html>

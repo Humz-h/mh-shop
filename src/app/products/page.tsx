@@ -70,7 +70,7 @@ export default function ProductsPage() {
                 <div className={`${PRODUCT_IMAGE_ASPECT_RATIO} w-full bg-gray-100 rounded-lg overflow-hidden cursor-pointer relative`} onClick={() => router.push(`/products/${product.id}`)}>
                   <Image
                     src={getImageUrl(product.imageUrl)}
-                    alt={product.name}
+                    alt={product.name || product.title}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
@@ -155,13 +155,13 @@ export default function ProductsPage() {
                         existing.quantity += 1
                       } else {
                         const displayPrice = getDisplayPrice(product.originalPrice || product.price || 0, product.salePrice);
-                        cart.push({ id: product.id, name: product.name, price: displayPrice, image: product.imageUrl || undefined, quantity: 1 })
+                        cart.push({ id: product.id, name: product.name || product.title, price: displayPrice, image: product.imageUrl || undefined, quantity: 1 })
                       }
                       localStorage.setItem("cart", JSON.stringify(cart))
                     } catch {}
                     // include params for first-load fallback
                     const displayPrice = getDisplayPrice(product.originalPrice || product.price || 0, product.salePrice);
-                    const params = new URLSearchParams({ id: String(product.id), name: product.name, price: String(displayPrice), image: product.imageUrl || "" })
+                    const params = new URLSearchParams({ id: String(product.id), name: product.name || product.title, price: String(displayPrice), image: product.imageUrl || "" })
                     router.push(`/cart?${params.toString()}`)
                   }}
                 >

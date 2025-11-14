@@ -7,7 +7,12 @@ const nextConfig: NextConfig = {
         protocol: 'http',
         hostname: 'localhost',
         port: '5000',
-        pathname: '/images/**',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'dienmayxanh.com',
+        pathname: '/**',
       },
     ],
   },

@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'euclid-circular-a': ['"Euclid Circular A"', 'sans-serif'],
+      },
       colors: {
         primary: {
           50: '#f0fdf4',

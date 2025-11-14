@@ -151,7 +151,7 @@ export function Header() {
                 )}
               </div>
             ) : (
-              <Link href="/auth/login" className="flex items-center gap-2 text-sm px-3 py-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors">
+              <Link href="/signin" className="flex items-center gap-2 text-sm px-3 py-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors">
                 <User className="h-5 w-5" />
                 <span>Đăng nhập</span>
               </Link>

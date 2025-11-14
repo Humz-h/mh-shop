@@ -31,7 +31,7 @@ export function Header() {
               0
             </span>
           </Link>
-          <Link href="/auth/login" className="hover:underline">
+          <Link href="/signin" className="hover:underline">
             Đăng nhập
           </Link>
         </nav>
