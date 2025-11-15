@@ -109,9 +109,6 @@ export function useAuth() {
     localStorage.removeItem("customer");
     setCustomer(null);
     
-    // Show success message
-    alert("Đăng xuất thành công!");
-    
     // Redirect to home page
     window.location.href = "/";
     return true;

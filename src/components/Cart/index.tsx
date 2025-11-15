@@ -5,7 +5,6 @@ import OrderSummary from "./OrderSummary";
 import { useAppSelector, useAppDispatch } from "@/redux/store";
 import { removeAllItemsFromCart } from "@/redux/features/cart-slice";
 import SingleItem from "./SingleItem";
-import Breadcrumb from "../Common/Breadcrumb";
 import Link from "next/link";
 
 const Cart = () => {
@@ -20,19 +19,14 @@ const Cart = () => {
 
   return (
     <>
-      {/* <!-- ===== Breadcrumb Section Start ===== --> */}
-      <section>
-        <Breadcrumb title={"Giỏ hàng"} pages={["Giỏ hàng"]} />
-      </section>
-      {/* <!-- ===== Breadcrumb Section End ===== --> */}
       {cartItems.length > 0 ? (
-        <section className="overflow-hidden py-20 bg-gray-2">
+        <section className="overflow-hidden pt-32 pb-20 bg-gray-2">
           <div className="max-w-[1170px] w-full mx-auto px-4 sm:px-8 xl:px-0">
-            <div className="flex flex-wrap items-center justify-between gap-5 mb-7.5">
-              <h2 className="font-medium text-dark text-2xl">Giỏ hàng của bạn</h2>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-5 mb-7.5">
+              <h2 className="font-medium text-dark text-2xl sm:text-3xl flex-shrink-0">Giỏ hàng của bạn</h2>
               <button 
                 onClick={handleClearCart}
-                className="text-blue hover:text-blue-dark ease-out duration-200 font-medium"
+                className="text-blue hover:text-blue-dark ease-out duration-200 font-medium whitespace-nowrap flex-shrink-0 self-start sm:self-auto"
               >
                 Xóa giỏ hàng
               </button>

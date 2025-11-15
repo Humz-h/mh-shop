@@ -9,7 +9,7 @@ import { AppDispatch } from "@/redux/store";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, getImageUrl } from "@/lib/utils";
 
 const SingleListItem = ({ item }: { item: Product }) => {
   const router = useRouter();
@@ -44,7 +44,7 @@ const SingleListItem = ({ item }: { item: Product }) => {
     <div className="group rounded-lg bg-white shadow-1">
       <div className="flex">
         <div className="shadow-list relative overflow-hidden flex items-center justify-center max-w-[270px] w-full sm:min-h-[270px] p-4">
-          <Image src={item.imgs?.previews?.[0] || "/images/products/default.png"} alt="" width={250} height={250} className="pointer-events-none" />
+          <Image src={getImageUrl(item.imgs?.previews?.[0] || item.imageUrl) || "/images/products/default.png"} alt={item.title || item.name || ""} width={250} height={250} className="pointer-events-none" />
 
           <div className="absolute left-0 bottom-0 translate-y-full w-full flex items-center justify-center gap-2.5 pb-5 ease-linear duration-200 group-hover:translate-y-0 z-10">
             <button

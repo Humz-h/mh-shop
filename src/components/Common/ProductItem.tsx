@@ -43,7 +43,7 @@ const ProductItem = ({ item }: { item: Product }) => {
     <div className="group">
       <div className="relative overflow-hidden flex items-center justify-center rounded-lg bg-[#F6F7FB] min-h-[270px] mb-4">
         <Image 
-          src={getImageUrl(item.imgs?.previews?.[0] || item.imageUrl) || "/images/products/default.png"} 
+          src={getImageUrl(item.imgs?.previews?.[0] || item.imgs?.thumbnails?.[0] || item.imageUrl) || "/images/products/default.png"} 
           alt={item.title || item.name || ""} 
           width={250} 
           height={250}

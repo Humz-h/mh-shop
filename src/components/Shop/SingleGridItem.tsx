@@ -8,7 +8,7 @@ import { AppDispatch } from "@/redux/store";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, getImageUrl } from "@/lib/utils";
 
 const SingleGridItem = ({ item }: { item: Product }) => {
   const router = useRouter();
@@ -42,7 +42,7 @@ const SingleGridItem = ({ item }: { item: Product }) => {
   return (
     <div className="group">
       <div className="relative overflow-hidden flex items-center justify-center rounded-lg bg-white shadow-1 min-h-[270px] mb-4">
-        <Image src={item.imgs?.previews?.[0] || "/images/products/default.png"} alt="" width={250} height={250} className="pointer-events-none" />
+        <Image src={getImageUrl(item.imgs?.previews?.[0] || item.imageUrl) || "/images/products/default.png"} alt={item.title || item.name || ""} width={250} height={250} className="pointer-events-none" />
 
         <div className="absolute left-0 bottom-0 translate-y-full w-full flex items-center justify-center gap-2.5 pb-5 ease-linear duration-200 group-hover:translate-y-0 z-10">
           <button

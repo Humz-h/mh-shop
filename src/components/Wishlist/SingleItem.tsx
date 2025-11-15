@@ -6,7 +6,7 @@ import { removeItemFromWishlist } from "@/redux/features/wishlist-slice";
 import { addItemToCart } from "@/redux/features/cart-slice";
 
 import Image from "next/image";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, getImageUrl } from "@/lib/utils";
 
 type WishListItem = {
   id: number;
@@ -71,7 +71,7 @@ const SingleItem = ({ item }: { item: WishListItem }) => {
         <div className="flex items-center justify-between gap-5">
           <div className="w-full flex items-center gap-5.5">
             <div className="flex items-center justify-center rounded-[5px] bg-gray-2 max-w-[80px] w-full h-17.5">
-              <Image src={item.imgs?.thumbnails?.[0] || "/images/products/default.png"} alt="product" width={200} height={200} />
+              <Image src={getImageUrl(item.imgs?.thumbnails?.[0] || item.imgs?.previews?.[0]) || "/images/products/default.png"} alt="product" width={200} height={200} />
             </div>
 
             <div>

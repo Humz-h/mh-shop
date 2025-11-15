@@ -222,3 +222,38 @@ export async function createOrder(orderData: CreateOrderRequest): Promise<Create
   }
 }
 
+export interface OrderDetailItem {
+  id: number;
+  orderId: number;
+  productId: number;
+  quantity: number;
+  price: number;
+  product: {
+    id: number;
+    name: string;
+    productCode: string;
+    originalPrice: number;
+    salePrice: number;
+    imageUrl: string;
+    description?: string;
+    [key: string]: unknown;
+  };
+}
+
+export async function getOrderDetails(orderId: number): Promise<OrderDetailItem[]> {
+  try {
+    const response = await apiFetch<OrderDetailItem[]>(`/api/order-details/order/${orderId}`, {
+      method: "GET",
+    });
+    return response;
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+        throw new Error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.');
+      }
+      throw err;
+    }
+    throw new Error('Không thể lấy chi tiết đơn hàng');
+  }
+}
+

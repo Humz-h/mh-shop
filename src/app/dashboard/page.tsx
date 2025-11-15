@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Order, getOrders } from "@/services/order";
 import { OrderCard } from "@/components/OrderCard";
 import { useAuth } from "@/hooks/useAuth";
-import Breadcrumb from "@/components/Common/Breadcrumb";
 import { formatCurrency } from "@/lib/utils";
 
 export default function DashboardPage() {
@@ -65,9 +64,6 @@ export default function DashboardPage() {
     loadOrders(nextPage, true);
   };
 
-  const handleViewOrderDetails = (orderId: number) => {
-    router.push(`/orders/${orderId}`);
-  };
 
   // Calculate statistics
   const totalOrders = orders.length;
@@ -78,8 +74,7 @@ export default function DashboardPage() {
   if (authLoading) {
     return (
       <>
-        <Breadcrumb title="Dashboard" pages={["dashboard"]} />
-        <section className="overflow-hidden py-20 bg-gray-2">
+        <section className="overflow-hidden pt-32 pb-20 bg-gray-2">
           <div className="max-w-[1170px] w-full mx-auto px-4 sm:px-8 xl:px-0">
             <div className="animate-pulse">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -100,9 +95,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <Breadcrumb title="Dashboard" pages={["dashboard"]} />
-      
-      <section className="overflow-hidden py-20 bg-gray-2">
+      <section className="overflow-hidden pt-32 pb-20 bg-gray-2">
         <div className="max-w-[1170px] w-full mx-auto px-4 sm:px-8 xl:px-0">
           {/* Header */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
@@ -293,7 +286,6 @@ export default function DashboardPage() {
                     <OrderCard
                       key={order.id}
                       order={order}
-                      onViewDetails={handleViewOrderDetails}
                     />
                   ))}
 

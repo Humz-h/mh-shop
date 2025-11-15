@@ -8,7 +8,6 @@ import { useSelector } from "react-redux";
 import { selectTotalPrice } from "@/redux/features/cart-slice";
 import { useCartModalContext } from "@/app/context/CartSidebarModalContext";
 import { useAuth } from "@/hooks/useAuth";
-import Image from "next/image";
 import { formatCurrency } from "@/lib/utils";
 
 const menuData: Menu[] = [];
@@ -18,11 +17,16 @@ const Header = () => {
   const [navigationOpen, setNavigationOpen] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const { openCartModal } = useCartModalContext();
   const { customer, isAuthenticated, logout } = useAuth();
 
   const product = useAppSelector((state) => state.cartReducer.items);
   const totalPrice = useSelector(selectTotalPrice);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleOpenCartModal = () => {
     openCartModal();
@@ -90,12 +94,9 @@ const Header = () => {
           {/* <!-- header top left --> */}
           <div className="xl:w-auto flex-col sm:flex-row w-full flex sm:justify-between sm:items-center gap-3 sm:gap-5">
             <Link className="flex-shrink-0" href="/">
-              <Image
-                src="/images/logo/logo.svg"
-                alt="Logo"
-                width={150}
-                height={24}
-              />
+              <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-700 bg-clip-text text-transparent hover:from-blue-700 hover:via-blue-600 hover:to-blue-800 transition-all duration-300 drop-shadow-sm">
+                MHShop
+              </span>
             </Link>
 
             <div className="max-w-[475px] w-full">
@@ -356,9 +357,11 @@ const Header = () => {
                       />
                     </svg>
 
-                    <span className="flex items-center justify-center font-medium text-xs absolute -right-1.5 -top-1.5 bg-blue w-4 h-4 rounded-full text-white">
-                      {product.length}
-                    </span>
+                    {isMounted && product && product.length > 0 && (
+                      <span className="flex items-center justify-center font-medium text-xs absolute -right-1.5 -top-1.5 bg-blue w-4 h-4 rounded-full text-white">
+                        {product.length}
+                      </span>
+                    )}
                   </span>
 
                   <div>

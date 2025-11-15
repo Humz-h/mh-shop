@@ -38,7 +38,7 @@ const EmptyCart = () => {
         </svg>
       </div>
 
-      <p className="pb-6">Giỏ hàng của bạn đang trống!</p>
+      <p className="pb-6 text-dark">Giỏ hàng của bạn đang trống!</p>
 
       <Link
         onClick={() => closeCartModal()}

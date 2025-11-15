@@ -7,18 +7,30 @@ import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
 import { createOrder } from "@/services/order";
 import { formatCurrency, getImageUrl } from "@/lib/utils";
+import { useAppSelector, useAppDispatch } from "@/redux/store";
+import { removeAllItemsFromCart } from "@/redux/features/cart-slice";
 
 interface CartItem {
   id: number;
   name: string;
+  title?: string;
   price: number;
+  discountedPrice?: number;
   image?: string;
+  imageUrl?: string;
+  imgs?: {
+    thumbnails: string[];
+    previews: string[];
+  };
   quantity: number;
 }
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const { customer, isAuthenticated, isLoading: authLoading } = useAuth();
+  // Lấy cart từ Redux store
+  const reduxCartItems = useAppSelector((state) => state.cartReducer.items);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -28,21 +40,21 @@ export default function CheckoutPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  // Load cart from localStorage
+  // Load cart từ Redux store và map sang format cho checkout
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const raw = localStorage.getItem("cart");
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setCartItems(parsed);
-        }
-      }
-    } catch {
-      // Ignore parse errors
-    }
-  }, []);
+    const mappedItems: CartItem[] = reduxCartItems.map((item) => ({
+      id: item.id,
+      name: item.title || "",
+      title: item.title,
+      price: item.discountedPrice || item.price,
+      discountedPrice: item.discountedPrice,
+      image: item.imgs?.previews?.[0] || item.imgs?.thumbnails?.[0],
+      imageUrl: item.imgs?.previews?.[0] || item.imgs?.thumbnails?.[0],
+      imgs: item.imgs,
+      quantity: item.quantity,
+    }));
+    setCartItems(mappedItems);
+  }, [reduxCartItems]);
 
   // Pre-fill user info if authenticated
   useEffect(() => {
@@ -112,8 +124,8 @@ export default function CheckoutPage() {
 
       if (result.success !== false) {
         setSuccess(true);
-        // Clear cart
-        localStorage.removeItem("cart");
+        // Clear cart từ Redux store
+        dispatch(removeAllItemsFromCart());
         setCartItems([]);
         
         // Redirect to success page or dashboard after 2 seconds
@@ -176,14 +188,14 @@ export default function CheckoutPage() {
                     <div className="flex items-center space-x-4 py-4">
                       <div className="relative w-20 h-20 rounded-lg overflow-hidden">
                         <Image
-                          src={getImageUrl(item.image) || "/placeholder.svg"}
-                          alt={item.name}
+                          src={getImageUrl(item.image || item.imageUrl || item.imgs?.previews?.[0] || item.imgs?.thumbnails?.[0]) || "/placeholder.svg"}
+                          alt={item.name || item.title || ""}
                           fill
                           className="object-cover"
                         />
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-medium text-gray-900">{item.name}</h3>
+                        <h3 className="font-medium text-gray-900">{item.name || item.title}</h3>
                         <p className="text-sm text-gray-600 mt-1">
                           {formatCurrency(item.price)} × {item.quantity}
                         </p>

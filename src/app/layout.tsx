@@ -14,6 +14,7 @@ import CartSidebarModal from "@/components/Common/CartSidebarModal";
 import { PreviewSliderProvider } from "./context/PreviewSliderContext";
 import PreviewSliderModal from "@/components/Common/PreviewSlider";
 import ScrollToTop from "@/components/Common/ScrollToTop";
+import { CartLoader } from "@/components/Cart/CartLoader";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -41,6 +42,7 @@ export default function RootLayout({
           <CartModalProvider>
             <ModalProvider>
               <PreviewSliderProvider>
+                <CartLoader />
                 <Header />
                 {children}
                 <QuickViewModal />
