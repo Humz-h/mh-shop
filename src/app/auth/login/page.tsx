@@ -175,10 +175,19 @@ export default function LoginPage() {
           {token && <p className="text-green-600 text-sm">Đăng nhập thành công ✅</p>}
         </form>
 
-        <div className="mt-6 text-center">
-          <p className="text-gray-600">
+        <div className="mt-6">
+          <Link
+            href="/signup"
+            className="w-full block text-center bg-white border-2 border-brandBlue text-brandBlue py-2 px-4 rounded-md hover:bg-blue-50 transition-colors font-medium"
+          >
+            Đăng ký tài khoản
+          </Link>
+        </div>
+
+        <div className="mt-4 text-center">
+          <p className="text-gray-600 text-sm">
             Chưa có tài khoản?{" "}
-            <Link href="/auth/register" className="text-brandBlue hover:underline font-medium">
+            <Link href="/signup" className="text-brandBlue hover:underline font-medium">
               Đăng ký ngay
             </Link>
           </p>

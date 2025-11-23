@@ -101,7 +101,7 @@ export default function DashboardPage() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
             <div>
               <h1 className="font-semibold text-xl sm:text-2xl xl:text-custom-3 text-dark mb-1">
-                Dashboard
+                Đơn hàng
               </h1>
               <p className="text-custom-sm text-dark-4">
                 Chào mừng, {customer?.fullName || customer?.username || "Người dùng"}!

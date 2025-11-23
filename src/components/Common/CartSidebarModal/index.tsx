@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useCartModalContext } from "@/app/context/CartSidebarModalContext";
 import {
@@ -15,8 +15,13 @@ import { formatCurrency } from "@/lib/utils";
 const CartSidebarModal = () => {
   const { isCartModalOpen, closeCartModal } = useCartModalContext();
   const cartItems = useAppSelector((state) => state.cartReducer.items);
+  const [isMounted, setIsMounted] = useState(false);
 
   const totalPrice = useSelector(selectTotalPrice);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     // closing modal while clicking outside
@@ -78,7 +83,7 @@ const CartSidebarModal = () => {
           <div className="h-[66vh] overflow-y-auto no-scrollbar">
             <div className="flex flex-col gap-6">
               {/* <!-- cart item --> */}
-              {cartItems.length > 0 ? (
+              {isMounted && cartItems.length > 0 ? (
                 cartItems.map((item, key) => (
                   <SingleItem
                     key={key}

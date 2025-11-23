@@ -81,7 +81,7 @@ const Signin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 pt-24">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
         {isAuthenticated && (
           <div className="mb-4 p-3 rounded-lg bg-blue-50 border border-blue-200">
@@ -152,6 +152,15 @@ const Signin = () => {
             >
               Forgot your password?
             </a>
+          </div>
+
+          <div className="mt-6">
+            <Link
+              href="/signup"
+              className="w-full block text-center bg-white border-2 border-blue-600 text-blue-600 py-3 px-4 rounded-lg hover:bg-blue-50 transition-colors font-medium"
+            >
+              Đăng ký tài khoản
+            </Link>
           </div>
 
           <div className="relative my-6">
@@ -234,6 +243,15 @@ const Signin = () => {
             </button>
           </div>
         </form>
+
+        <div className="mt-6 text-center">
+          <p className="text-gray-600 text-sm">
+            Chưa có tài khoản?{" "}
+            <Link href="/signup" className="text-blue-600 hover:underline font-medium">
+              Đăng ký ngay
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

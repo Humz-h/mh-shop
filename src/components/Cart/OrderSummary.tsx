@@ -65,9 +65,9 @@ const OrderSummary = () => {
           <button
             type="button"
             onClick={handleCheckout}
-            className="w-full flex justify-center font-medium text-white bg-blue py-3 px-6 rounded-md ease-out duration-200 hover:bg-blue-dark mt-7.5"
+            className="w-full flex justify-center font-medium text-dark bg-blue border-2 border-blue py-4 px-6 rounded-md ease-out duration-200 hover:bg-blue-dark hover:border-blue-dark mt-7.5 text-lg"
           >
-            Tiến hành thanh toán
+            Thanh toán
           </button>
 
           <Link

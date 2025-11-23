@@ -119,4 +119,92 @@ export async function fetchProductById(id: number): Promise<Product> {
     }
     throw new Error('Không thể tải thông tin sản phẩm');
   }
+}
+
+export async function searchProducts(keyword: string): Promise<Product[]> {
+  try {
+    if (!keyword.trim()) {
+      return [];
+    }
+    
+    const response = await apiFetch<{ items: ApiProduct[] } | ApiProduct[]>(`/api/Products/search?keyword=${encodeURIComponent(keyword.trim())}`);
+    
+    // Xử lý cả 2 trường hợp: response là object có items hoặc là array trực tiếp
+    const apiProducts = Array.isArray(response) ? response : (response.items || []);
+    
+    return apiProducts.map((apiProduct) => ({
+      id: apiProduct.id,
+      title: apiProduct.name,
+      name: apiProduct.name,
+      reviews: 0,
+      price: apiProduct.originalPrice,
+      discountedPrice: apiProduct.salePrice || apiProduct.originalPrice,
+      salePrice: apiProduct.salePrice,
+      originalPrice: apiProduct.originalPrice,
+      discountPercent: apiProduct.discountPercent || 0,
+      productGroup: apiProduct.productGroup,
+      productCode: apiProduct.productCode,
+      stock: apiProduct.stock,
+      description: apiProduct.description,
+      productDetails: apiProduct.productDetails,
+      productVariants: apiProduct.productVariants,
+      imageUrl: apiProduct.imageUrl,
+      imgs: apiProduct.imageUrl ? {
+        thumbnails: [apiProduct.imageUrl],
+        previews: [apiProduct.imageUrl],
+      } : undefined,
+    })) as Product[];
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message.includes('404') || error.message.includes('Not Found')) {
+        return [];
+      }
+      throw error;
+    }
+    throw new Error('Không thể tìm kiếm sản phẩm');
+  }
+}
+
+export async function fetchProductsByGroup(group: string): Promise<Product[]> {
+  try {
+    if (!group.trim()) {
+      return [];
+    }
+    
+    const response = await apiFetch<ApiProduct[] | { items: ApiProduct[] }>(`/api/Products/by-group?group=${encodeURIComponent(group.trim())}`);
+    
+    // Xử lý cả 2 trường hợp: response là array trực tiếp hoặc object có items
+    const apiProducts = Array.isArray(response) ? response : (response.items || []);
+    
+    return apiProducts.map((apiProduct) => ({
+      id: apiProduct.id,
+      title: apiProduct.name,
+      name: apiProduct.name,
+      reviews: 0,
+      price: apiProduct.originalPrice,
+      discountedPrice: apiProduct.salePrice || apiProduct.originalPrice,
+      salePrice: apiProduct.salePrice,
+      originalPrice: apiProduct.originalPrice,
+      discountPercent: apiProduct.discountPercent || 0,
+      productGroup: apiProduct.productGroup,
+      productCode: apiProduct.productCode,
+      stock: apiProduct.stock,
+      description: apiProduct.description,
+      productDetails: apiProduct.productDetails,
+      productVariants: apiProduct.productVariants,
+      imageUrl: apiProduct.imageUrl,
+      imgs: apiProduct.imageUrl ? {
+        thumbnails: [apiProduct.imageUrl],
+        previews: [apiProduct.imageUrl],
+      } : undefined,
+    })) as Product[];
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message.includes('404') || error.message.includes('Not Found')) {
+        return [];
+      }
+      throw error;
+    }
+    throw new Error('Không thể tải sản phẩm theo nhóm');
+  }
 } 

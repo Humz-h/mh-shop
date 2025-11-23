@@ -378,7 +378,7 @@ export default function ProductDetailPage() {
                 <button
                   onClick={handleAddToCart}
                   disabled={product.stock === 0}
-                  className="inline-flex font-medium text-white bg-blue py-3 px-7 rounded-md ease-out duration-200 hover:bg-blue-dark disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex font-medium text-dark bg-blue py-3 px-7 rounded-md ease-out duration-200 hover:bg-blue-dark disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Thêm vào giỏ hàng
                 </button>

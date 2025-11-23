@@ -46,7 +46,14 @@ const Signup = () => {
         router.push("/signin");
       }, 2000);
     } catch (err) {
-      setMessage(err instanceof Error ? err.message : "Đã xảy ra lỗi khi đăng ký");
+      let errorMessage = err instanceof Error ? err.message : "Đã xảy ra lỗi khi đăng ký";
+      
+      // Kiểm tra nếu lỗi là email đã tồn tại
+      if (errorMessage.includes("Email đã được đăng ký") || errorMessage.includes("email đã được đăng ký") || errorMessage.includes("Email đã tồn tại") || errorMessage.includes("email đã tồn tại")) {
+        errorMessage = "Tài khoản đã tồn tại";
+      }
+      
+      setMessage(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -233,7 +240,7 @@ const Signup = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full flex justify-center font-medium text-white bg-dark py-3 px-6 rounded-lg ease-out duration-200 hover:bg-blue mt-7.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex justify-center font-medium text-dark bg-blue border-2 border-blue py-3 px-6 rounded-lg ease-out duration-200 hover:bg-blue-dark hover:border-blue-dark mt-7.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isLoading ? "Đang đăng ký..." : "Tạo tài khoản"}
                 </button>

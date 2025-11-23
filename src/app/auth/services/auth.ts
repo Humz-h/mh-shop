@@ -115,7 +115,25 @@ export async function registerUser(data: RegisterRequest): Promise<ApiResponse> 
   const text = await res.text(); // chỉ đọc body 1 lần
 
   if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}: ${text}`);
+    let errorMessage = `${res.status} ${res.statusText}`;
+    try {
+      const errorData = JSON.parse(text);
+      errorMessage = errorData.message || errorData.error || errorMessage;
+    } catch {
+      // Nếu text không phải JSON, thử parse nếu có JSON trong text
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        try {
+          const errorData = JSON.parse(jsonMatch[0]);
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch {
+          errorMessage = text || errorMessage;
+        }
+      } else {
+        errorMessage = text || errorMessage;
+      }
+    }
+    throw new Error(errorMessage);
   }
 
   try {

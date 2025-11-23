@@ -15,11 +15,15 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
     if (!res.ok) {
       let errorMessage = `Request failed: ${res.status}`;
       try {
-        const errorData = await res.json();
-        errorMessage = errorData.message || errorData.error || errorMessage;
-      } catch {
         const text = await res.text();
-        errorMessage = text || errorMessage;
+        try {
+          const errorData = JSON.parse(text);
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch {
+          errorMessage = text || errorMessage;
+        }
+      } catch {
+        // If reading text fails, use default error message
       }
       throw new Error(errorMessage);
     }

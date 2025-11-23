@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
 import { createOrder } from "@/services/order";
+import { fetchProductById } from "@/services/product";
 import { formatCurrency, getImageUrl } from "@/lib/utils";
 import { useAppSelector, useAppDispatch } from "@/redux/store";
 import { removeAllItemsFromCart } from "@/redux/features/cart-slice";
@@ -105,6 +106,26 @@ export default function CheckoutPage() {
       return;
     }
 
+    // Kiểm tra stock của từng sản phẩm
+    try {
+      for (const item of cartItems) {
+        const product = await fetchProductById(item.id);
+        if (product.stock !== undefined && product.stock === 0) {
+          setError(`Sản phẩm "${product.name || product.title || 'này'}" đã hết hàng`);
+          setLoading(false);
+          return;
+        }
+        if (product.stock !== undefined && product.stock < item.quantity) {
+          setError(`Sản phẩm "${product.name || product.title || 'này'}" chỉ còn ${product.stock} sản phẩm`);
+          setLoading(false);
+          return;
+        }
+      }
+    } catch (stockError) {
+      // Nếu không thể kiểm tra stock, vẫn tiếp tục (có thể API sẽ báo lỗi)
+      console.warn("Không thể kiểm tra stock:", stockError);
+    }
+
     try {
       const orderData = {
         customerId: customer?.id,
@@ -137,7 +158,19 @@ export default function CheckoutPage() {
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
-        if (err.message.includes("401") || err.message.includes("Unauthorized")) {
+        // Kiểm tra nếu lỗi liên quan đến stock
+        if (err.message.includes("Insufficient stock") || err.message.includes("hết hàng") || err.message.includes("stock") || err.message.includes("Available: 0")) {
+          // Parse error message để lấy tên sản phẩm
+          // Format: "Insufficient stock for product Bếp gas âm Chefs EH-GG501A. Available: 0, Requested: 1."
+          let productName = "này";
+          const productMatch = err.message.match(/product\s+([^\.]+?)(?:\.|Available)/i) || 
+                               err.message.match(/sản phẩm\s+([^\.]+?)(?:\.|Available)/i) ||
+                               err.message.match(/for\s+product\s+([^\.]+?)(?:\.|Available)/i);
+          if (productMatch && productMatch[1]) {
+            productName = productMatch[1].trim();
+          }
+          setError(`Sản phẩm "${productName}" đã hết hàng`);
+        } else if (err.message.includes("401") || err.message.includes("Unauthorized")) {
           setError("Bạn cần đăng nhập để đặt hàng");
         } else if (err.message.includes("404")) {
           setError("Không tìm thấy endpoint. Vui lòng kiểm tra lại.");

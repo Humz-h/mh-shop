@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Dropdown from "./Dropdown";
 import type { Menu } from "@/types/Menu";
 import { useAppSelector } from "@/redux/store";
@@ -13,6 +14,7 @@ import { formatCurrency } from "@/lib/utils";
 const menuData: Menu[] = [];
 
 const Header = () => {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [navigationOpen, setNavigationOpen] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
@@ -32,6 +34,14 @@ const Header = () => {
     openCartModal();
   };
 
+  const handleSearch = (e?: React.FormEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
+    if (!searchQuery.trim()) return;
+    router.push(`/search?keyword=${encodeURIComponent(searchQuery.trim())}`);
+  };
+
   // Sticky menu
   const handleStickyMenu = () => {
     if (window.scrollY >= 80) {
@@ -48,13 +58,14 @@ const Header = () => {
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
   
   const categories = [
-    { label: "Máy tính để bàn", value: "1" },
-    { label: "Laptop", value: "2" },
-    { label: "Màn hình", value: "3" },
-    { label: "Điện thoại", value: "4" },
-    { label: "Đồng hồ", value: "5" },
-    { label: "Chuột", value: "6" },
-    { label: "Máy tính bảng", value: "7" },
+    { label: "Gaming", value: "gaming" },
+    { label: "Điện tử", value: "dien-tu" },
+    { label: "Sản phẩm", value: "san-pham" },
+    { label: "Tivi", value: "tivi" },
+    { label: "Tủ lạnh", value: "tu-lanh" },
+    { label: "Máy giặt", value: "may-giat" },
+    { label: "Điều hòa", value: "dieu-hoa" },
+    { label: "Laptop", value: "laptop" },
   ];
 
   // Close category menu when clicking outside
@@ -100,7 +111,7 @@ const Header = () => {
             </Link>
 
             <div className="max-w-[475px] w-full">
-              <form>
+              <form onSubmit={handleSearch}>
                 <div className="flex items-center">
                   {/* Category Dropdown Menu */}
                   <div className="relative category-dropdown">
@@ -128,7 +139,7 @@ const Header = () => {
                             type="button"
                             onClick={() => {
                               setIsCategoryMenuOpen(false);
-                              // Handle category selection here
+                              router.push(`/group?name=${encodeURIComponent(category.label)}`);
                             }}
                             className="w-full text-left px-4 py-2.5 text-sm text-dark hover:bg-gray-1 transition-colors first:rounded-t-md last:rounded-b-md"
                           >
@@ -150,12 +161,15 @@ const Header = () => {
                       id="search"
                       placeholder="Bạn đang tìm kiếm gì..."
                       autoComplete="off"
+                      onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                       className="custom-search w-full rounded-r-[5px] bg-gray-1 !border-l-0 border border-gray-3 py-1.5 pl-3 pr-8 text-sm outline-none ease-in duration-200"
                     />
 
                     <button
                       id="search-btn"
+                      type="submit"
                       aria-label="Search"
+                      onClick={handleSearch}
                       className="flex items-center justify-center absolute right-3 top-1/2 -translate-y-1/2 ease-in duration-200 hover:text-blue"
                     >
                       <svg
@@ -273,7 +287,7 @@ const Header = () => {
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                           onClick={() => setUserDropdownOpen(false)}
                         >
-                          Dashboard
+                          Đơn hàng
                         </Link>
                         <button
                           onClick={() => {
@@ -369,7 +383,7 @@ const Header = () => {
                       giỏ hàng
                     </span>
                     <p className="font-medium text-xs text-dark leading-tight">
-                      {formatCurrency(totalPrice, "VND")}
+                      {isMounted ? formatCurrency(totalPrice, "VND") : "0 ₫"}
                     </p>
                   </div>
                 </button>
