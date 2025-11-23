@@ -4,8 +4,6 @@ import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { searchProducts } from "@/services/product";
 import type { Product } from "@/types";
-import { getImageUrl, formatCurrency } from "@/lib/utils";
-import Image from "next/image";
 import Link from "next/link";
 import Breadcrumb from "@/components/Common/Breadcrumb";
 import SingleGridItem from "@/components/Shop/SingleGridItem";
