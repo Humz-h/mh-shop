@@ -25,7 +25,7 @@ export default function DashboardPage() {
         page: pageNum,
         pageSize: 10,
         customerId: customer?.id,
-        includeItems: false
+        includeItems: true
       });
 
       if (append) {

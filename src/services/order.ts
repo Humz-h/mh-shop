@@ -23,12 +23,15 @@ export interface ApiOrderResponse {
   id: number;
   userId: number;
   totalPrice: number;
-  paymentMethod: string;
+  paymentMethod?: string;
   status: string;
-  address: string;
-  phone: string;
+  address?: string;
+  phone?: string;
   createdAt: string;
-  orderDetails: OrderDetail[];
+  orderDetails?: OrderDetail[];
+  /** Một số API trả về items thay vì orderDetails */
+  items?: OrderDetail[];
+  orderItems?: OrderDetail[];
 }
 
 // Internal Order format cho app
@@ -91,8 +94,9 @@ export async function getOrders(params: GetOrdersParams = {}): Promise<Order[]> 
       // Normalize status (convert "Pending" -> "pending")
       const normalizedStatus = apiOrder.status.toLowerCase() as Order["status"];
       
-      // Map orderDetails to orderItems
-      const orderItems: OrderItem[] = (apiOrder.orderDetails || []).map((detail, index) => ({
+      // Map orderDetails/items/orderItems to orderItems (hỗ trợ nhiều format API)
+      const rawItems = apiOrder.orderDetails ?? apiOrder.items ?? apiOrder.orderItems ?? [];
+      const orderItems: OrderItem[] = (Array.isArray(rawItems) ? rawItems : []).map((detail: OrderDetail, index: number) => ({
         id: detail.id || index,
         productId: detail.productId || 0,
         productName: detail.productName || "",

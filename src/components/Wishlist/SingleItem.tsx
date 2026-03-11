@@ -71,7 +71,7 @@ const SingleItem = ({ item }: { item: WishListItem }) => {
         <div className="flex items-center justify-between gap-5">
           <div className="w-full flex items-center gap-5.5">
             <div className="flex items-center justify-center rounded-[5px] bg-gray-2 max-w-[80px] w-full h-17.5">
-              <Image src={getImageUrl(item.imgs?.thumbnails?.[0] || item.imgs?.previews?.[0]) || "/images/products/default.png"} alt="product" width={200} height={200} />
+              <Image src={getImageUrl(item.imgs?.thumbnails?.[0] || item.imgs?.previews?.[0]) || "/images/products/default.svg"} alt="product" width={200} height={200} />
             </div>
 
             <div>

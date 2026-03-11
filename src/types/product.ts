@@ -16,7 +16,8 @@ export type Product = {
   salePrice?: number | null;
   originalPrice?: number;
   discountPercent?: number;
-  productGroup?: string;
+  category?: string;
+  categoryId?: number;
   productCode?: string;
   stock?: number;
   description?: string;

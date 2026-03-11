@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
         hostname: 'dienmayxanh.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'logowik.com',
+        pathname: '/**',
+      },
     ],
   },
 };

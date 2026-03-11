@@ -100,7 +100,9 @@ const CartSidebarModal = () => {
             <div className="flex items-center justify-between gap-5 mb-6">
               <p className="font-medium text-xl text-dark">Tổng tiền:</p>
 
-              <p className="font-medium text-xl text-dark">{formatCurrency(totalPrice, "VND")}</p>
+              <p className="font-medium text-xl text-dark" suppressHydrationWarning>
+                {formatCurrency(isMounted ? totalPrice : 0, "VND")}
+              </p>
             </div>
 
             <div className="flex items-center gap-4">
@@ -114,7 +116,8 @@ const CartSidebarModal = () => {
 
               <Link
                 href="/checkout"
-                className="w-full flex justify-center font-medium text-dark bg-gray-2 border border-gray-3 py-[13px] px-6 rounded-md ease-out duration-200 hover:bg-gray-3"
+                onClick={() => closeCartModal()}
+                className="w-full flex justify-center font-medium !text-white bg-brandBlue border border-brandBlue py-[13px] px-6 rounded-md ease-out duration-200 hover:opacity-90"
               >
                 Thanh toán
               </Link>

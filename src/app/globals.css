@@ -40,6 +40,9 @@
   /* Brand colors for e-commerce theme */
   --color-brandBlue: #1e40af;
   --color-brandYellow: #fbbf24;
+  /* Blue palette for buttons/links (bg-blue, text-blue, etc.) */
+  --blue: #0272ce;
+  --blue-dark: #015aa5;
 }
 
 .dark {
@@ -78,6 +81,8 @@
   /* Brand colors for e-commerce theme */
   --color-brandBlue: #1e40af;
   --color-brandYellow: #fbbf24;
+  --blue: #0272ce;
+  --blue-dark: #015aa5;
 }
 
 @theme inline {
@@ -119,14 +124,19 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-blue: var(--blue);
+  --color-blue-dark: var(--blue-dark);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
   }
 }
 
@@ -154,6 +164,25 @@
 
   .text-brandYellow {
     color: #fbbf24;
+  }
+
+  /* Blue buttons - ensure visible text on colored background */
+  .bg-blue {
+    background-color: #0272ce;
+  }
+  .bg-blue-dark,
+  .hover\:bg-blue-dark:hover {
+    background-color: #015aa5;
+  }
+  .border-blue {
+    border-color: #0272ce;
+  }
+  .border-blue-dark,
+  .hover\:border-blue-dark:hover {
+    border-color: #015aa5;
+  }
+  .text-blue {
+    color: #0272ce;
   }
 
   /* Marquee animation for scrolling text */

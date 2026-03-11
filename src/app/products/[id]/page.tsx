@@ -10,7 +10,7 @@ import Breadcrumb from "@/components/Common/Breadcrumb";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { addItemToCart } from "@/redux/features/cart-slice";
-import { addItemToWishlist } from "@/redux/features/wishlist-slice";
+import { FavoriteButton } from "@/components/Common/FavoriteButton";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -20,7 +20,6 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isFavorite, setIsFavorite] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -66,18 +65,6 @@ export default function ProductDetailPage() {
         quantity: quantity,
       })
     );
-  };
-
-  const handleAddToWishlist = () => {
-    if (!product) return;
-    dispatch(
-      addItemToWishlist({
-        ...product,
-        status: "available",
-        quantity: 1,
-      })
-    );
-    setIsFavorite(!isFavorite);
   };
 
   if (loading) {
@@ -383,28 +370,11 @@ export default function ProductDetailPage() {
                   Thêm vào giỏ hàng
                 </button>
 
-                <button
-                  onClick={handleAddToWishlist}
-                  className="flex items-center justify-center w-12 h-12 rounded-md border border-gray-3 ease-out duration-200 hover:text-white hover:bg-dark hover:border-transparent"
-                >
-                  <svg
-                    className={`fill-current ${isFavorite ? "text-red-500" : ""}`}
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M5.62436 4.42423C3.96537 5.18256 2.75 6.98626 2.75 9.13713C2.75 11.3345 3.64922 13.0283 4.93829 14.4798C6.00072 15.6761 7.28684 16.6677 8.54113 17.6346C8.83904 17.8643 9.13515 18.0926 9.42605 18.3219C9.95208 18.7366 10.4213 19.1006 10.8736 19.3649C11.3261 19.6293 11.6904 19.75 12 19.75C12.3096 19.75 12.6739 19.6293 13.1264 19.3649C13.5787 19.1006 14.0479 18.7366 14.574 18.3219C14.8649 18.0926 15.161 17.8643 15.4589 17.6346C16.7132 16.6677 17.9993 15.6761 19.0617 14.4798C20.3508 13.0283 21.25 11.3345 21.25 9.13713C21.25 6.98626 20.0346 5.18256 18.3756 4.42423C16.7639 3.68751 14.5983 3.88261 12.5404 6.02077C12.399 6.16766 12.2039 6.25067 12 6.25067C11.7961 6.25067 11.601 6.16766 11.4596 6.02077C9.40166 3.88261 7.23607 3.68751 5.62436 4.42423Z"
-                      fill={isFavorite ? "currentColor" : "none"}
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                  </svg>
-                </button>
+                <FavoriteButton
+                  productId={product.id}
+                  product={product}
+                  className="!w-12 !h-12 rounded-md border border-gray-3"
+                />
               </div>
             </div>
           </div>

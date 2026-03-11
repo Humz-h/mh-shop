@@ -26,10 +26,19 @@ module.exports = {
         brandGray: { background: "#f5f6f8" }
       },
       boxShadow: {
-        header: "0 1px 2px rgba(0,0,0,0.06)",
-        card: "0 1px 3px rgba(0,0,0,0.08)",
-        'card-hover': "0 4px 12px rgba(0,0,0,0.15)",
-      }
+        header: "0 1px 3px rgba(0,0,0,0.06)",
+        card: "0 1px 3px rgba(0,0,0,0.06)",
+        "card-hover": "0 8px 25px -5px rgba(0,0,0,0.1), 0 4px 10px -5px rgba(0,0,0,0.04)",
+        "1": "0 2px 8px rgba(0,0,0,0.06)",
+        "2": "0 4px 12px rgba(0,0,0,0.08)",
+        "3": "0 10px 40px rgba(0,0,0,0.12)",
+      },
+      transitionDuration: {
+        250: "250ms",
+      },
+      transitionTimingFunction: {
+        smooth: "cubic-bezier(0.4, 0, 0.2, 1)",
+      },
     },
   },
   plugins: [],

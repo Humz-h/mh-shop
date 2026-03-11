@@ -6,6 +6,7 @@ export interface Customer {
   createdAt: string;
   fullName?: string | null;
   phone?: string | null;
+  avatarUrl?: string | null;
   updatedAt?: string | null;
   token?: string;
 }

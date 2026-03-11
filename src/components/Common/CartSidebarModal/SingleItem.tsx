@@ -5,6 +5,7 @@ import { AppDispatch } from "@/redux/store";
 import Image from "next/image";
 import { removeItemFromCart as removeItemFromCartAction } from "@/redux/features/cart-slice";
 import { formatCurrency, getImageUrl } from "@/lib/utils";
+import { useProductImage } from "@/hooks/useProductImage";
 
 type CartItem = {
   id: number;
@@ -12,6 +13,7 @@ type CartItem = {
   price: number;
   discountedPrice: number;
   quantity: number;
+  imageUrl?: string;
   imgs?: {
     thumbnails: string[];
     previews: string[];
@@ -20,6 +22,8 @@ type CartItem = {
 
 const SingleItem = ({ item }: { item: CartItem }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const initialImage = item.imgs?.thumbnails?.[0] || item.imgs?.previews?.[0] || item.imageUrl;
+  const imageUrl = useProductImage(item.id, initialImage);
 
   const handleRemoveFromCart = () => {
     dispatch(removeItemFromCartAction(item.id));
@@ -28,8 +32,8 @@ const SingleItem = ({ item }: { item: CartItem }) => {
   return (
     <div className="flex items-center justify-between gap-5">
       <div className="w-full flex items-center gap-6">
-        <div className="flex items-center justify-center rounded-[10px] bg-gray-3 max-w-[90px] w-full h-22.5">
-          <Image src={getImageUrl(item.imgs?.thumbnails?.[0] || item.imgs?.previews?.[0]) || "/images/products/default.png"} alt="product" width={100} height={100} />
+        <div className="flex items-center justify-center rounded-[10px] bg-gray-3 max-w-[90px] w-full h-22.5 overflow-hidden">
+          <Image src={getImageUrl(imageUrl)} alt="product" width={100} height={100} className="object-contain" />
         </div>
 
         <div>

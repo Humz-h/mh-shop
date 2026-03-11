@@ -15,9 +15,12 @@ export interface LoginUserData {
   id: number;
   username: string;
   email: string;
-  fullName: string;
+  fullName?: string;
   role: string;
   createdAt: string;
+  avatarUrl?: string | null;
+  phone?: string | null;
+  updatedAt?: string | null;
 }
 
 export interface LoginResponse {

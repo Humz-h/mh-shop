@@ -6,6 +6,7 @@ import "./css/euclid-circular-a-font.css";
 import "./css/style.css";
 import Header from "@/components/Header/index";
 import Footer from "@/components/Footer/index";
+import { AuthProvider } from "./context/AuthContext";
 import { ModalProvider } from "./context/QuickViewModalContext";
 import { CartModalProvider } from "./context/CartSidebarModalContext";
 import { ReduxProvider } from "@/redux/provider";
@@ -14,7 +15,9 @@ import CartSidebarModal from "@/components/Common/CartSidebarModal";
 import { PreviewSliderProvider } from "./context/PreviewSliderContext";
 import PreviewSliderModal from "@/components/Common/PreviewSlider";
 import ScrollToTop from "@/components/Common/ScrollToTop";
+import ChatSupportWidget from "@/components/Common/ChatSupportWidget";
 import { CartLoader } from "@/components/Cart/CartLoader";
+import PopupBanner from "@/components/Banner/PopupBanner";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -39,6 +42,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ReduxProvider>
+          <AuthProvider>
           <CartModalProvider>
             <ModalProvider>
               <PreviewSliderProvider>
@@ -48,11 +52,14 @@ export default function RootLayout({
                 <QuickViewModal />
                 <CartSidebarModal />
                 <PreviewSliderModal />
+                <PopupBanner />
               </PreviewSliderProvider>
             </ModalProvider>
           </CartModalProvider>
+          </AuthProvider>
         </ReduxProvider>
         <ScrollToTop />
+        <ChatSupportWidget />
         <Footer />
       </body>
     </html>

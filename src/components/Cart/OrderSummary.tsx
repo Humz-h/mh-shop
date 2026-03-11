@@ -1,19 +1,15 @@
+"use client";
+
 import { selectTotalPrice } from "@/redux/features/cart-slice";
 import { useAppSelector } from "@/redux/store";
 import React from "react";
 import { useSelector } from "react-redux";
 import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 const OrderSummary = () => {
-  const router = useRouter();
   const cartItems = useAppSelector((state) => state.cartReducer.items);
   const totalPrice = useSelector(selectTotalPrice);
-
-  const handleCheckout = () => {
-    router.push("/checkout");
-  };
 
   return (
     <div className="lg:max-w-[455px] w-full">
@@ -62,19 +58,11 @@ const OrderSummary = () => {
           </div>
 
           {/* <!-- checkout button --> */}
-          <button
-            type="button"
-            onClick={handleCheckout}
-            className="w-full flex justify-center font-medium text-dark bg-blue border-2 border-blue py-4 px-6 rounded-md ease-out duration-200 hover:bg-blue-dark hover:border-blue-dark mt-7.5 text-lg"
+          <Link
+            href="/checkout"
+            className="w-full flex justify-center font-medium !text-white bg-brandBlue border-2 border-brandBlue py-4 px-6 rounded-md ease-out duration-200 hover:opacity-90 mt-7.5 text-lg"
           >
             Thanh toán
-          </button>
-
-          <Link
-            href="/shop-with-sidebar"
-            className="w-full flex justify-center font-medium text-dark border border-gray-3 bg-white py-3 px-6 rounded-md ease-out duration-200 hover:bg-gray-1 hover:border-blue mt-3"
-          >
-            Tiếp tục mua sắm
           </Link>
         </div>
       </div>

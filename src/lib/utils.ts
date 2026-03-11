@@ -3,13 +3,20 @@ export function formatCurrency(value: number | null | undefined, currency: strin
   return new Intl.NumberFormat("vi-VN", { style: "currency", currency }).format(numericValue);
 }
 
+const DEFAULT_PRODUCT_IMAGE = "/images/products/default.svg";
+
 export function getImageUrl(imageUrl?: string): string {
-  if (!imageUrl) return "/placeholder.svg";
-  
+  if (!imageUrl) return DEFAULT_PRODUCT_IMAGE;
+
   if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
     return imageUrl;
   }
-  
+
+  // Path local trong public folder - không thêm API_URL
+  if (imageUrl.startsWith("/images/") || imageUrl.startsWith("/placeholder")) {
+    return imageUrl;
+  }
+
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
   return `${API_URL}${imageUrl.startsWith("/") ? imageUrl : `/${imageUrl}`}`;
 }

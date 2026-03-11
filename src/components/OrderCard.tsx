@@ -111,7 +111,7 @@ export function OrderCard({ order }: OrderCardProps) {
 
       <div className="flex items-center justify-between">
         <div className="text-custom-sm text-dark-4">
-          {order.orderItems?.length || 0} sản phẩm
+          {(order.orderItems?.length ?? (showDetails ? orderDetails.length : undefined) ?? 0)} sản phẩm
         </div>
         <button
           onClick={handleViewDetails}

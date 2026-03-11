@@ -1,11 +1,15 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { login } from "@/app/auth/services/auth";
+import { getProfile } from "@/services/auth";
 import { useAuth } from "@/hooks/useAuth";
 import type { Customer } from "@/types";
 
 const Signin = () => {
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/";
   const { loginWithResponse, isAuthenticated, isLoading: authLoading } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
@@ -32,21 +36,30 @@ const Signin = () => {
 
       localStorage.setItem("token", token);
 
-      const customerData: Customer = {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: (user.role === "admin" || user.role === "Admin") ? "admin" : "user",
-        createdAt: user.createdAt,
-        fullName: user.fullName || null,
-        token: token
-      };
+      let customerData: Customer;
+      try {
+        const fullProfile = await getProfile(user.id, token);
+        customerData = { ...fullProfile, token };
+      } catch {
+        customerData = {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          role: (user.role === "admin" || user.role === "Admin") ? "admin" : "user",
+          createdAt: user.createdAt,
+          fullName: user.fullName || null,
+          phone: user.phone ?? null,
+          avatarUrl: user.avatarUrl ?? null,
+          updatedAt: user.updatedAt ?? null,
+          token
+        };
+      }
 
       loginWithResponse(customerData);
       setError("");
 
       setTimeout(() => {
-        window.location.href = "/";
+        window.location.href = redirect;
       }, 100);
     } catch (err: unknown) {
       setIsLoading(false);

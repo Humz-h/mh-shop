@@ -6,7 +6,8 @@ interface ApiProduct {
   name: string;
   productCode?: string;
   originalPrice: number;
-  productGroup?: string;
+  category?: string;
+  categoryId?: number;
   discountPercent?: number;
   salePrice: number | null;
   stock?: number;
@@ -40,41 +41,57 @@ interface ApiProduct {
   inventories?: unknown;
 }
 
+/** Lấy imageUrl từ API response - hỗ trợ cả imageUrl và ImageUrl (PascalCase từ .NET) */
+function getImageFromApiProduct(apiProduct: ApiProduct & Record<string, unknown>): string | undefined {
+  const url = apiProduct.imageUrl ?? apiProduct.ImageUrl;
+  return typeof url === 'string' ? url : undefined;
+}
+
 export async function fetchProducts(page: number = 1, pageSize: number = 100): Promise<Product[]> {
   try {
-    const apiProducts = await apiFetch<ApiProduct[]>(`/api/Products?page=${page}&pageSize=${pageSize}`);
+    const apiProducts = await apiFetch<(ApiProduct & Record<string, unknown>)[]>(`/api/Products?page=${page}&pageSize=${pageSize}`);
     
-    return apiProducts.map((apiProduct) => ({
-      id: apiProduct.id,
-      title: apiProduct.name,
-      name: apiProduct.name,
-      reviews: 0,
-      price: apiProduct.originalPrice,
-      discountedPrice: apiProduct.salePrice || apiProduct.originalPrice,
-      salePrice: apiProduct.salePrice,
-      originalPrice: apiProduct.originalPrice,
-      discountPercent: apiProduct.discountPercent || 0,
-      productGroup: apiProduct.productGroup,
-      productCode: apiProduct.productCode,
-      stock: apiProduct.stock,
-      description: apiProduct.description,
-      productDetails: apiProduct.productDetails,
-      productVariants: apiProduct.productVariants,
-      imageUrl: apiProduct.imageUrl,
-      imgs: apiProduct.imageUrl ? {
-        thumbnails: [apiProduct.imageUrl],
-        previews: [apiProduct.imageUrl],
-      } : undefined,
-    })) as Product[];
+    return apiProducts.map((apiProduct) => {
+      const imageUrl = getImageFromApiProduct(apiProduct);
+      return {
+        id: apiProduct.id,
+        title: apiProduct.name,
+        name: apiProduct.name,
+        reviews: 0,
+        price: apiProduct.originalPrice,
+        discountedPrice: apiProduct.salePrice || apiProduct.originalPrice,
+        salePrice: apiProduct.salePrice,
+        originalPrice: apiProduct.originalPrice,
+        discountPercent: apiProduct.discountPercent || 0,
+        category: apiProduct.category,
+        categoryId: apiProduct.categoryId,
+        productCode: apiProduct.productCode,
+        stock: apiProduct.stock,
+        description: apiProduct.description,
+        productDetails: apiProduct.productDetails,
+        productVariants: apiProduct.productVariants,
+        imageUrl,
+        imgs: imageUrl ? { thumbnails: [imageUrl], previews: [imageUrl] } : undefined,
+      };
+    }) as Product[];
   } catch (error) {
     console.error("Error fetching products:", error);
     throw error;
   }
 }
 
+export async function fetchProductImage(productId: number): Promise<string | undefined> {
+  try {
+    const apiProduct = await apiFetch<ApiProduct & Record<string, unknown>>(`/api/Products/${productId}`);
+    return getImageFromApiProduct(apiProduct);
+  } catch {
+    return undefined;
+  }
+}
+
 export async function fetchProductById(id: number): Promise<Product> {
   try {
-    const apiProduct = await apiFetch<ApiProduct>(`/api/Products/${id}`);
+    const apiProduct = await apiFetch<ApiProduct & Record<string, unknown>>(`/api/Products/${id}`);
     
     // Xử lý warranty: có thể là string hoặc number
     const processedProductDetails = apiProduct.productDetails?.map((detail) => ({
@@ -85,7 +102,7 @@ export async function fetchProductById(id: number): Promise<Product> {
     }));
 
     // Đảm bảo imgs luôn được tạo nếu có imageUrl
-    const imageUrl = apiProduct.imageUrl;
+    const imageUrl = getImageFromApiProduct(apiProduct);
     const imgs = imageUrl ? {
       thumbnails: [imageUrl],
       previews: [imageUrl],
@@ -101,7 +118,8 @@ export async function fetchProductById(id: number): Promise<Product> {
       salePrice: apiProduct.salePrice,
       originalPrice: apiProduct.originalPrice,
       discountPercent: apiProduct.discountPercent || 0,
-      productGroup: apiProduct.productGroup,
+      category: apiProduct.category,
+      categoryId: apiProduct.categoryId,
       productCode: apiProduct.productCode,
       stock: apiProduct.stock,
       description: apiProduct.description,
@@ -142,7 +160,8 @@ export async function searchProducts(keyword: string): Promise<Product[]> {
       salePrice: apiProduct.salePrice,
       originalPrice: apiProduct.originalPrice,
       discountPercent: apiProduct.discountPercent || 0,
-      productGroup: apiProduct.productGroup,
+      category: apiProduct.category,
+      categoryId: apiProduct.categoryId,
       productCode: apiProduct.productCode,
       stock: apiProduct.stock,
       description: apiProduct.description,
@@ -165,17 +184,13 @@ export async function searchProducts(keyword: string): Promise<Product[]> {
   }
 }
 
-export async function fetchProductsByGroup(group: string): Promise<Product[]> {
+export async function fetchProductsByCategoryId(categoryId: number): Promise<Product[]> {
   try {
-    if (!group.trim()) {
+    if (!categoryId || categoryId <= 0) {
       return [];
     }
-    
-    const response = await apiFetch<ApiProduct[] | { items: ApiProduct[] }>(`/api/Products/by-group?group=${encodeURIComponent(group.trim())}`);
-    
-    // Xử lý cả 2 trường hợp: response là array trực tiếp hoặc object có items
-    const apiProducts = Array.isArray(response) ? response : (response.items || []);
-    
+    const response = await apiFetch<ApiProduct[] | { items: ApiProduct[] }>(`/api/Products?categoryId=${categoryId}&pageSize=100`);
+    const apiProducts = Array.isArray(response) ? response : (response?.items ?? []);
     return apiProducts.map((apiProduct) => ({
       id: apiProduct.id,
       title: apiProduct.name,
@@ -186,7 +201,8 @@ export async function fetchProductsByGroup(group: string): Promise<Product[]> {
       salePrice: apiProduct.salePrice,
       originalPrice: apiProduct.originalPrice,
       discountPercent: apiProduct.discountPercent || 0,
-      productGroup: apiProduct.productGroup,
+      category: apiProduct.category,
+      categoryId: apiProduct.categoryId,
       productCode: apiProduct.productCode,
       stock: apiProduct.stock,
       description: apiProduct.description,
@@ -205,6 +221,48 @@ export async function fetchProductsByGroup(group: string): Promise<Product[]> {
       }
       throw error;
     }
-    throw new Error('Không thể tải sản phẩm theo nhóm');
+    throw new Error('Không thể tải sản phẩm theo danh mục');
+  }
+}
+
+export async function fetchProductsByCategory(category: string): Promise<Product[]> {
+  try {
+    if (!category.trim()) {
+      return [];
+    }
+    const response = await apiFetch<ApiProduct[] | { items: ApiProduct[] }>(`/api/Products?category=${encodeURIComponent(category.trim())}&pageSize=100`);
+    const apiProducts = Array.isArray(response) ? response : (response?.items ?? []);
+    
+    return apiProducts.map((apiProduct) => ({
+      id: apiProduct.id,
+      title: apiProduct.name,
+      name: apiProduct.name,
+      reviews: 0,
+      price: apiProduct.originalPrice,
+      discountedPrice: apiProduct.salePrice || apiProduct.originalPrice,
+      salePrice: apiProduct.salePrice,
+      originalPrice: apiProduct.originalPrice,
+      discountPercent: apiProduct.discountPercent || 0,
+      category: apiProduct.category,
+      categoryId: apiProduct.categoryId,
+      productCode: apiProduct.productCode,
+      stock: apiProduct.stock,
+      description: apiProduct.description,
+      productDetails: apiProduct.productDetails,
+      productVariants: apiProduct.productVariants,
+      imageUrl: apiProduct.imageUrl,
+      imgs: apiProduct.imageUrl ? {
+        thumbnails: [apiProduct.imageUrl],
+        previews: [apiProduct.imageUrl],
+      } : undefined,
+    })) as Product[];
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message.includes('404') || error.message.includes('Not Found')) {
+        return [];
+      }
+      throw error;
+    }
+    throw new Error('Không thể tải sản phẩm theo danh mục');
   }
 } 

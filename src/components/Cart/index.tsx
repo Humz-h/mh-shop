@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import Discount from "./Discount";
 import OrderSummary from "./OrderSummary";
 import { useAppSelector, useAppDispatch } from "@/redux/store";
 import { removeAllItemsFromCart } from "@/redux/features/cart-slice";
@@ -24,12 +23,20 @@ const Cart = () => {
           <div className="max-w-[1170px] w-full mx-auto px-4 sm:px-8 xl:px-0">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-5 mb-7.5">
               <h2 className="font-medium text-dark text-2xl sm:text-3xl flex-shrink-0">Giỏ hàng của bạn</h2>
-              <button 
-                onClick={handleClearCart}
-                className="text-blue hover:text-blue-dark ease-out duration-200 font-medium whitespace-nowrap flex-shrink-0 self-start sm:self-auto"
-              >
-                Xóa giỏ hàng
-              </button>
+              <div className="flex items-center gap-4 sm:gap-5 flex-shrink-0 self-start sm:self-auto">
+                <Link
+                  href="/shop-with-sidebar"
+                  className="inline-flex justify-center font-medium text-dark border border-gray-3 bg-white py-2.5 px-5 rounded-md ease-out duration-200 hover:bg-gray-1 hover:border-blue"
+                >
+                  Tiếp tục mua sắm
+                </Link>
+                <button
+                  onClick={handleClearCart}
+                  className="text-blue hover:text-blue-dark ease-out duration-200 font-medium whitespace-nowrap"
+                >
+                  Xóa giỏ hàng
+                </button>
+              </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-1">
@@ -67,8 +74,7 @@ const Cart = () => {
               </div>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-7.5 xl:gap-11 mt-9">
-              <Discount />
+            <div className="flex flex-col lg:flex-row lg:justify-end mt-9">
               <OrderSummary />
             </div>
           </div>

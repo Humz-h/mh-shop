@@ -5,6 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { login } from "@/app/auth/services/auth";
+import { getProfile } from "@/services/auth";
 import { useAuth } from "@/hooks/useAuth";
 import type { Customer } from "@/types";
 
@@ -39,19 +40,27 @@ export default function LoginPage() {
       // Lưu token trước
       localStorage.setItem("token", token);
 
-      // Map user data từ API response sang Customer format
-      // API trả về role là "customer", cần map sang "user"
-      const customerData: Customer = {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: (user.role === "admin" || user.role === "Admin") ? "admin" : "user",
-        createdAt: user.createdAt,
-        fullName: user.fullName || null,
-        token: token
-      };
-      
-      // Lưu customer data và cập nhật state
+      // Gọi GET /api/Users/{id} để lấy profile đầy đủ (avatar, phone, v.v.) — cùng API updateProfile dùng
+      let customerData: Customer;
+      try {
+        const fullProfile = await getProfile(user.id, token);
+        customerData = { ...fullProfile, token };
+      } catch {
+        // Fallback: dùng data từ login response
+        customerData = {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          role: (user.role === "admin" || user.role === "Admin") ? "admin" : "user",
+          createdAt: user.createdAt,
+          fullName: user.fullName || null,
+          phone: user.phone ?? null,
+          avatarUrl: user.avatarUrl ?? null,
+          updatedAt: user.updatedAt ?? null,
+          token
+        };
+      }
+
       loginWithResponse(customerData);
       setToken(token);
       setError("");

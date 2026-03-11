@@ -8,6 +8,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { formatCurrency, getImageUrl } from "@/lib/utils";
+import { useProductImage } from "@/hooks/useProductImage";
 
 type CartItem = {
   id: number;
@@ -15,6 +16,7 @@ type CartItem = {
   price: number;
   discountedPrice: number;
   quantity: number;
+  imageUrl?: string;
   imgs?: {
     thumbnails: string[];
     previews: string[];
@@ -24,6 +26,8 @@ type CartItem = {
 const SingleItem = ({ item }: { item: CartItem }) => {
   const [quantity, setQuantity] = useState(item.quantity);
   const dispatch = useDispatch<AppDispatch>();
+  const initialImage = item.imgs?.thumbnails?.[0] || item.imgs?.previews?.[0] || item.imageUrl;
+  const imageUrl = useProductImage(item.id, initialImage);
 
   // Sync quantity with item.quantity when it changes
   useEffect(() => {
@@ -48,8 +52,6 @@ const SingleItem = ({ item }: { item: CartItem }) => {
     }
   };
 
-  const productImage = item.imgs?.thumbnails?.[0] || item.imgs?.previews?.[0] || "/images/products/default.png";
-
   return (
     <div className="flex items-center border-t border-gray-3 py-5 px-7.5 hover:bg-gray-1/50 transition-colors ease-out duration-200">
       <div className="min-w-[400px]">
@@ -59,7 +61,7 @@ const SingleItem = ({ item }: { item: CartItem }) => {
               <Image 
                 width={80} 
                 height={80} 
-                src={getImageUrl(productImage)} 
+                src={getImageUrl(imageUrl)} 
                 alt={item.title}
                 className="object-contain w-full h-full"
               />

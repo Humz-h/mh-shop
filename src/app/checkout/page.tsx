@@ -69,15 +69,16 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (!authLoading) {
       if (!isAuthenticated) {
-        router.push("/auth/login?redirect=/checkout");
+        router.push("/signin?redirect=/checkout");
         return;
       }
-      if (cartItems.length === 0) {
+      // Dùng reduxCartItems thay vì cartItems vì cartItems ban đầu rỗng (chưa map xong)
+      if (reduxCartItems.length === 0) {
         router.push("/cart");
         return;
       }
     }
-  }, [authLoading, isAuthenticated, cartItems.length, router]);
+  }, [authLoading, isAuthenticated, reduxCartItems.length, router]);
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shippingFee = 50000;
@@ -221,7 +222,7 @@ export default function CheckoutPage() {
                     <div className="flex items-center space-x-4 py-4">
                       <div className="relative w-20 h-20 rounded-lg overflow-hidden">
                         <Image
-                          src={getImageUrl(item.image || item.imageUrl || item.imgs?.previews?.[0] || item.imgs?.thumbnails?.[0]) || "/placeholder.svg"}
+                          src={getImageUrl(item.image || item.imageUrl || item.imgs?.previews?.[0] || item.imgs?.thumbnails?.[0]) || "/images/products/default.svg"}
                           alt={item.name || item.title || ""}
                           fill
                           className="object-cover"
@@ -338,8 +339,16 @@ export default function CheckoutPage() {
                 )}
 
                 {success && (
-                  <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md">
-                    Đặt hàng thành công! Đang chuyển hướng...
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" role="alert">
+                    <div className="bg-white rounded-xl shadow-2xl p-8 mx-4 max-w-md text-center animate-in fade-in zoom-in duration-200">
+                      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+                        <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Đã đặt hàng thành công</h3>
+                      <p className="text-gray-600 text-sm">Đang chuyển hướng đến trang quản lý đơn hàng...</p>
+                    </div>
                   </div>
                 )}
 
